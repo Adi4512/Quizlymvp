@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 const Hero = () => {
   return (
     <div className="relative min-h-screen w-screen bg-[url('/static/bg.png')] overflow-hidden">
@@ -20,18 +21,18 @@ const Hero = () => {
             </div>
             {/* Navigation */}
             <nav className="flex gap-8 text-white font-inter font-semibold text-base">
-              <a href="#" className="hover:text-white">
+              <NavLink to="home" className="hover:text-white">
                 Home
-              </a>
-              <a href="#" className="hover:text-white">
+              </NavLink>
+              <NavLink to="library" className="hover:text-white">
                 Library
-              </a>
-              <a href="#" className="hover:text-white">
+              </NavLink>
+              <NavLink to="courses" className="hover:text-white">
                 Courses
-              </a>
-              <a href="#" className="hover:text-white">
+              </NavLink>
+              <NavLink to="test" className="hover:text-white">
                 Test
-              </a>
+              </NavLink>
             </nav>
             {/* Sign up button */}
             <div className="">
