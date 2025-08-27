@@ -1,14 +1,36 @@
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
+
 const Hero = () => {
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+
+  const openSignUp = () => {
+    setIsSignInOpen(false);
+    setIsSignUpOpen(true);
+  };
+
+  const openSignIn = () => {
+    setIsSignUpOpen(false);
+    setIsSignInOpen(true);
+  };
+
+  const closeModals = () => {
+    setIsSignUpOpen(false);
+    setIsSignInOpen(false);
+  };
+
   return (
-    <div className="relative min-h-screen w-screen bg-[url('/static/bg.png')] overflow-hidden">
+    <div className="relative min-h-screen w-full bg-[url('/static/bg.png')] overflow-hidden">
       {/* Background abstract shapes (placeholders) */}
 
       {/* Glassmorphic Card */}
       <div className="absolute left-1/2 -translate-x-1/2 top-20 bottom-0 z-10 w-[80%] max-w-full">
         <div
           id="blur"
-          className="bg-white/30 backdrop-blur-lg rounded-3xl shadow-xl p-12 w-full h-full border border-white/40 flex flex-col"
+          className="bg-white/30 backdrop-blur-lg  rounded-3xl shadow-xl p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-14 mt-[-15px]">
@@ -36,7 +58,10 @@ const Hero = () => {
             </nav>
             {/* Sign up button */}
             <div className="">
-              <button className="mr-4  border border-white/50 px-6 py-2 rounded-full text-white font-semibold hover:bg-white/50 transition ">
+              <button 
+                onClick={openSignUp}
+                className="mr-4  border border-white/50 px-6 py-2 rounded-full text-white font-semibold hover:bg-white/50 transition "
+              >
                 Sign up
               </button>
             </div>
@@ -110,6 +135,8 @@ const Hero = () => {
           <div className="absolute right-0 top-0 w-full h-52 bg-[url('/static/top.png')] bg-no-repeat bg-right-top bg-contain pointer-events-none"></div>
         </div>
       </div>
+      {isSignUpOpen && <SignUp isOpen={isSignUpOpen} onClose={closeModals} />}
+      {isSignInOpen && <SignIn isOpen={isSignInOpen} onClose={closeModals} onSwitchToSignUp={openSignUp} />}
     </div>
   );
 };
