@@ -1,7 +1,8 @@
 {
-  "name": "quizlymvp",
+  "name": "quizethic-ai",
   "private": true,
   "version": "0.0.0",
+  "description": "AI-powered quiz generation platform with custom MCQ creation and difficulty distribution",
   "type": "module",
   "scripts": {
     "dev": "vite",

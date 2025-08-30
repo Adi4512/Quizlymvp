@@ -42,7 +42,11 @@ const Hero = () => {
           <div className="flex items-center justify-between mb-14 mt-[-15px]">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-purple-400 rounded-full flex items-center justify-center font-bold text-white text-lg"></div>
+              <img 
+                src="/static/quizethic-favicon.svg" 
+                alt="Quizethic AI Logo" 
+                className="w-10 h-10 rounded-full"
+              />
               <span className="font-bold text-lg text-white drop-shadow">
                 Quizethic AI
               </span>
@@ -160,22 +164,33 @@ const Hero = () => {
           />
           
           {/* Popup */}
-          <div className="relative bg-yellow-400 border-4 border-yellow-600 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 animate-none">
+          <div className="relative bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-300 rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4">
             <div className="text-center">
-              <div className="text-6xl mb-4">🚧</div>
-              <h3 className="text-2xl font-bold text-yellow-900 mb-4">Under Development</h3>
-              <p className="text-yellow-800 text-lg mb-6">
-                Backend is currently under development. Please enjoy the frontend demo for now!
-              </p>
-              <p className="text-yellow-700 font-semibold">
-                We'll be back with a fully functional app in 1-2 weeks! 🚀
-              </p>
+              <div className="text-5xl mb-4">🔄</div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Project in Early Development</h3>
+              <div className="space-y-3 text-gray-700">
+                <p className="text-sm">
+                  This is a prototype demonstration showcasing the initial UI/UX design.
+                </p>
+                <div className="bg-blue-100 rounded-lg p-3 border border-blue-200">
+                  <p className="text-xs text-blue-800 font-medium">
+                    <span className="font-bold">Current Status:</span> 5% Complete
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    Frontend: Basic UI Components | Backend: Not Started | AI Integration: Planned
+                  </p>
+                </div>
+                <p className="text-sm">
+                  Full development roadmap includes authentication, AI-powered quiz generation, 
+                  payment processing, and comprehensive user management.
+                </p>
+              </div>
             </div>
             
             {/* Close button */}
             <button
               onClick={() => setShowPopup(false)}
-              className="cursor-pointer absolute top-4 right-4 text-yellow-700 hover:text-yellow-900 transition-colors text-2xl font-bold"
+              className="cursor-pointer absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition-colors text-xl font-bold bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center"
             >
               ✕
             </button>
