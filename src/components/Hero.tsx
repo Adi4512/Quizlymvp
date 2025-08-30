@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 
 const Hero = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const openSignUp = () => {
     setIsSignInOpen(false);
@@ -21,6 +22,11 @@ const Hero = () => {
     setIsSignUpOpen(false);
     setIsSignInOpen(false);
   };
+
+  // Show popup when component mounts
+  useEffect(() => {
+    setShowPopup(true);
+  }, []);
 
   return (
     <div className="relative min-h-screen w-full bg-[url('/static/bg.png')] overflow-hidden">
@@ -143,6 +149,39 @@ const Hero = () => {
       </div>
       {isSignUpOpen && <SignUp isOpen={isSignUpOpen} onClose={closeModals} />}
       {isSignInOpen && <SignIn isOpen={isSignInOpen} onClose={closeModals} onSwitchToSignUp={openSignUp} />}
+      
+      {/* Development Notice Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowPopup(false)}
+          />
+          
+          {/* Popup */}
+          <div className="relative bg-yellow-400 border-4 border-yellow-600 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 animate-pulse">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🚧</div>
+              <h3 className="text-2xl font-bold text-yellow-900 mb-4">Under Development</h3>
+              <p className="text-yellow-800 text-lg mb-6">
+                Backend is currently under development. Please enjoy the frontend demo for now!
+              </p>
+              <p className="text-yellow-700 font-semibold">
+                We'll be back with a fully functional app in 1-2 weeks! 🚀
+              </p>
+            </div>
+            
+            {/* Close button */}
+            <button
+              onClick={() => setShowPopup(false)}
+              className="cursor-pointer absolute top-4 right-4 text-yellow-700 hover:text-yellow-900 transition-colors text-2xl font-bold"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
