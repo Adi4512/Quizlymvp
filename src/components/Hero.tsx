@@ -57,12 +57,18 @@ const Hero = () => {
               </NavLink>
             </nav>
             {/* Sign up button */}
-            <div className="">
+            <div className="relative z-10">
               <button 
                 onClick={openSignUp}
-                className="mr-4  border border-white/50 px-6 py-2 rounded-full text-white font-semibold hover:bg-white/50 transition "
+                className="mr-4  border border-white/50 px-6 py-2 rounded-full text-white font-semibold hover:bg-white/50 transition z-[9999]"
               >
                 Sign up
+              </button>
+              <button 
+                onClick={openSignIn}
+                className="border border-white/50 px-6 py-2 rounded-full text-white font-semibold hover:bg-white/50 transition z-[9999]"
+              >
+                Sign in
               </button>
             </div>
           </div>
@@ -131,8 +137,8 @@ const Hero = () => {
               </div>
             </div>
           </div>
-          <div className="absolute left-40 bottom-0 w-full h-64 bg-[url('/static/bottom.png')] bg-no-repeat bg-left-bottom bg-contain pointer-events-none"></div>
-          <div className="absolute right-0 top-0 w-full h-52 bg-[url('/static/top.png')] bg-no-repeat bg-right-top bg-contain pointer-events-none"></div>
+          <div className="absolute left-40 bottom-0 w-full h-64 bg-[url('/static/bottom.png')] bg-no-repeat bg-left-bottom bg-contain pointer-events-none z-[-1]"></div>
+          <div className="absolute right-0 top-0 w-full h-52 bg-[url('/static/top.png')] bg-no-repeat bg-right-top bg-contain pointer-events-none z-[-1]"></div>
         </div>
       </div>
       {isSignUpOpen && <SignUp isOpen={isSignUpOpen} onClose={closeModals} />}
