@@ -52,7 +52,7 @@ const SignUp = ({ isOpen, onClose }: SignUpProps) => {
     setError(null);
 
     try {
-      const { data, error } = await auth.signUp(
+      const { error } = await auth.signUp(
         formData.email,
         formData.password,
         formData.username
