@@ -160,7 +160,7 @@ const Hero = () => {
           />
           
           {/* Popup */}
-          <div className="relative bg-yellow-400 border-4 border-yellow-600 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 animate-pulse">
+          <div className="relative bg-yellow-400 border-4 border-yellow-600 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 animate-none">
             <div className="text-center">
               <div className="text-6xl mb-4">🚧</div>
               <h3 className="text-2xl font-bold text-yellow-900 mb-4">Under Development</h3>
