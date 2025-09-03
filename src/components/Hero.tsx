@@ -1,12 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
+import Footer from "./Footer";
+import { supabase } from "../lib/supabase";
 
 const Hero = () => {
+  const navigate = useNavigate();
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const openSignUp = () => {
     setIsSignInOpen(false);
@@ -23,12 +27,40 @@ const Hero = () => {
     setIsSignInOpen(false);
   };
 
-  // Show popup when component mounts
+  // Check authentication status and show popup when component mounts
   useEffect(() => {
-    setShowPopup(true);
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // Always show the landing page, regardless of auth status
+        // The dashboard will handle its own auth check
+        setIsCheckingAuth(false);
+        setShowPopup(true);
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setIsCheckingAuth(false);
+        setShowPopup(true);
+      }
+    };
+
+    checkAuth();
   }, []);
 
+  // Show loading screen while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
+    <>
     <div className="relative min-h-screen w-full bg-[url('/static/bg.png')] overflow-hidden">
       {/* Background abstract shapes (placeholders) */}
 
@@ -95,14 +127,26 @@ const Hero = () => {
                 Embark on a Journey of Knowledge Exploration with Our Extensive
                 Collection of Interactive Quizzes.
               </p>
-              <button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition">
-                Get it now
+              <button 
+                onClick={async () => {
+                  // Check if user is authenticated
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (session?.user) {
+                    navigate('/dashboard');
+                  } else {
+                    // User not authenticated, show sign-up modal
+                    openSignUp();
+                  }
+                }}
+                className="cursor-pointer bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition"
+              >
+                Create Your AI Quiz Now
               </button>
             </div>
             {/* Right: Topic selection */}
             <div className="flex flex-col items-center">
               <div className="mt-28 text-white/80 mb-4 text-center">
-                HI Aditya! WHAT TOPIC ARE YOU
+                HI Brainiac! WHAT TOPIC ARE YOU
                 <br />
                 INTERESTED IN?
               </div>
@@ -151,7 +195,7 @@ const Hero = () => {
           <div className="absolute right-0 top-0 w-full h-52 bg-[url('/static/top.png')] bg-no-repeat bg-right-top bg-contain pointer-events-none z-[-1]"></div>
         </div>
       </div>
-      {isSignUpOpen && <SignUp isOpen={isSignUpOpen} onClose={closeModals} />}
+      {isSignUpOpen && <SignUp isOpen={isSignUpOpen} onClose={closeModals} onSwitchToSignIn={openSignIn} />}
       {isSignInOpen && <SignIn isOpen={isSignInOpen} onClose={closeModals} onSwitchToSignUp={openSignUp} />}
       
       {/* Development Notice Popup */}
@@ -174,10 +218,10 @@ const Hero = () => {
                 </p>
                 <div className="bg-blue-100 rounded-lg p-3 border border-blue-200">
                   <p className="text-xs text-blue-800 font-medium">
-                    <span className="font-bold">Current Status:</span> 5% Complete
+                    <span className="font-bold">Current Status:</span> 15% Complete
                   </p>
                   <p className="text-xs text-blue-700 mt-1">
-                    Frontend: Basic UI Components | Backend: Not Started | AI Integration: Planned
+                    Frontend: Basic UI Components | Backend: Auth completed , Database connection pending | AI Integration: Planned
                   </p>
                 </div>
                 <p className="text-sm">
@@ -197,7 +241,14 @@ const Hero = () => {
           </div>
         </div>
       )}
+      
+      {/* Footer only shows on landing page */}
+     
     </div>
+    
+     <Footer />
+     
+     </>
   );
 };
 

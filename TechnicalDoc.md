@@ -193,7 +193,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_key
 
 ### Target Benchmarks
 - **Month 1**: 100 users, 5% conversion
-- **Month 3**: 500 users, 8% conversion
+- **Month 3**: 500 users, 8% conversionx  
 - **Month 6**: 2000 users, 10% conversion
 - **Month 12**: 10000 users, 12% conversion
 
