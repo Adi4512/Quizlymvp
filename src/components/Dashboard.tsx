@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   
   // Refs for GSAP animations
   const hamburgerRef = useRef<HTMLButtonElement>(null);
@@ -33,6 +34,7 @@ const Dashboard = () => {
       if (session?.user) {
         setUser(session.user as User);
       }
+      setShowPopup(true);
       setLoading(false);
     };
 
@@ -245,6 +247,8 @@ const Dashboard = () => {
         </div>
       </header>
 
+
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
@@ -328,6 +332,60 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+      
+      {showPopup && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowPopup(false)}
+          />
+          
+          {/* Popup */}
+          <div className="relative bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-300 rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4">
+            <div className="text-center">
+              <div className="text-5xl mb-4">🚧</div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Dashboard Under Development</h3>
+              <div className="space-y-3 text-gray-700">
+                <p className="text-sm">
+                  The current dashboard is not a replica of the original design. We are actively working on the backend infrastructure.
+                </p>
+                <div className="bg-blue-100 rounded-lg p-3 border border-blue-200">
+                  <p className="text-xs text-blue-800 font-medium">
+                    <span className="font-bold">Current Status:</span> Backend Development in Progress
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    UI: Testing Interface | Backend: Core Development | Features: Coming Soon
+                  </p>
+                </div>
+                <p className="text-sm">
+                  This UI is just for testing purposes. Thank you for your patience as we build something amazing!
+                </p>
+                <div className="bg-green-100 rounded-lg p-3 border border-green-200">
+                  <p className="text-sm text-green-800 font-medium">
+                    🎉 <span className="font-bold">Waitlist Feature Coming Soon!</span>
+                  </p>
+                  <p className="text-xs text-green-700 mt-1">
+                    Be the first to know when we launch the full platform
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Close button */}
+            <button
+              onClick={() => setShowPopup(false)}
+              className="cursor-pointer absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition-colors text-xl font-bold bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+
+
+
     </div>
   );
 };
