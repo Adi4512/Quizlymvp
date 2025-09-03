@@ -40,7 +40,7 @@ const Dashboard = () => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_, session) => {
         if (session?.user) {
           setUser(session.user as User);
         } else {

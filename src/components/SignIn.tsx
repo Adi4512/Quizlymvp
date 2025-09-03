@@ -58,7 +58,7 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }: SignInProps) => {
     setError(null);
 
     try {
-      const { data, error } = await auth.signIn(
+      const { error } = await auth.signIn(
         formData.email,
         formData.password
       );

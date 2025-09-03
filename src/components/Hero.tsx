@@ -31,7 +31,7 @@ const Hero = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        await supabase.auth.getSession();
         
         // Always show the landing page, regardless of auth status
         // The dashboard will handle its own auth check
@@ -214,7 +214,7 @@ const Hero = () => {
               <h3 className="text-2xl font-bold text-gray-800 mb-4">Project in Early Development</h3>
               <div className="space-y-3 text-gray-700">
                 <p className="text-sm">
-                  This is a prototype demonstration showcasing the initial UI/UX design.
+                  This is a prototype demonstration showcasing the initial UI/UX design and some functionality.
                 </p>
                 <div className="bg-blue-100 rounded-lg p-3 border border-blue-200">
                   <p className="text-xs text-blue-800 font-medium">

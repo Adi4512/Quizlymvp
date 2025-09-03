@@ -47,7 +47,7 @@ const AuthModal = () => {
     setSignInError(null);
 
     try {
-      const { data, error } = await auth.signIn(
+      const { error } = await auth.signIn(
         signInData.email,
         signInData.password
       );
