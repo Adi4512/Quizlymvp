@@ -244,9 +244,9 @@ const Hero = () => {
   <h3 className="text-md text-white mb-2">
     Beat the competition—join now for exclusive early access to AI-powered quizzes.
   </h3>
-</div>
+            </div>
             
-            <Joinwaitlist />
+            <Joinwaitlist onSuccess={closeWaitlistPopup} />
           </div>
         </div>
       )}
