@@ -226,7 +226,7 @@ const Dashboard = () => {
                 {/* Dropdown Menu */}
                 <div 
                   ref={menuRef}
-                  className={`absolute right-0 top-full mt-2 sm:mt-6 w-40 sm:w-48 bg-white/10 backdrop-blur-lg rounded-lg border border-white/20 z-50 ${
+                  className={`fixed right-4 top-16 sm:absolute sm:right-0 sm:top-full  sm:mt-6 w-40 sm:w-48 bg-gradient-to-br from-purple-900/95 to-indigo-900/95 sm:bg-white/10 backdrop-blur-lg rounded-lg border border-white/20 z-[99999] ${
                     isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
                   }`}
                 >
@@ -236,7 +236,7 @@ const Dashboard = () => {
                       <p className="font-semibold text-sm text-white">
                         {user.user_metadata?.full_name || 'User'}
                       </p>
-                      <p className="text-xs text-white/70">{user.email}</p>
+                      <p className="text-xs text-white/70 hidden sm:block">{user.email}</p>
                     </div>
                     
                     <button
@@ -287,9 +287,9 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/20">
-            <div className="flex items-center justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 -z-0">
+          <div className="bg-white/10  rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/20 -z-0 ">
+            <div className="flex items-center justify-between -z-0">
               <div>
                 <p className="text-white/70 text-xs sm:text-sm">Quizzes Completed</p>
                 <p className="text-2xl sm:text-3xl font-bold text-white">0</p>

@@ -22,12 +22,22 @@ const AuthModal = () => {
   const [signInError, setSignInError] = useState<string | null>(null);
   const [signUpError, setSignUpError] = useState<string | null>(null);
   const [splineLoaded, setSplineLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Detect mobile device for performance optimization
+    const checkMobile = () => {
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                            window.innerWidth <= 768;
+      setIsMobile(isMobileDevice);
+    };
+
+    checkMobile();
+
     // Set a timeout to show the modal content even if Spline takes too long to load
     const timeout = setTimeout(() => {
       setSplineLoaded(true);
-    }, 2000);
+    }, isMobile ? 1000 : 2000); // Faster timeout for mobile
 
     return () => clearTimeout(timeout);
   }, []);
@@ -163,18 +173,40 @@ const AuthModal = () => {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
-   
       <div className="absolute inset-0 bg-[#0B0B0F]" style={{ zIndex: -2 }}></div>
       
-      <Spline 
-    
-        scene="https://prod.spline.design/03V8AhkNUD7ZlrjS/scene.splinecode"
+      {/* Optimized Spline for both mobile and desktop */}
+      <div 
         className="absolute inset-0 w-full h-full"
-        style={{ zIndex: -1 }}
-      />
+        style={{ 
+          zIndex: -1,
+          pointerEvents: 'none' // Allow clicks to pass through
+        }}
+      >
+        <Spline 
+          scene="https://prod.spline.design/03V8AhkNUD7ZlrjS/scene.splinecode"
+          style={{ 
+            width: '100%',
+            height: '100%',
+            // Mobile performance optimizations
+            ...(isMobile && {
+              transform: 'scale(0.8)', // Slightly smaller on mobile
+              transformOrigin: 'center',
+              filter: 'blur(0.5px)', // Slight blur to reduce GPU load
+            })
+          }}
+          onLoad={() => setSplineLoaded(true)}
+        />
+      </div>
       
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/20" style={{ zIndex: 0 }}></div>
+      {/* Overlay for better text readability - stronger on mobile */}
+      <div 
+        className="absolute inset-0" 
+        style={{ 
+          zIndex: 0,
+          background: isMobile ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.2)'
+        }}
+      ></div>
       
       {/* Loading indicator */}
       {!splineLoaded && (
@@ -182,10 +214,16 @@ const AuthModal = () => {
           <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
-        </div>
+        </div>  
       )}
       
-      <div className={`relative bg-white/20 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md border border-white/40 transition-opacity duration-500 ${splineLoaded ? 'opacity-100' : 'opacity-0'}`} style={{ zIndex: 1 }}>
+      <div 
+        className={`relative bg-white/20 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md border border-white/40 transition-opacity duration-500 ${splineLoaded ? 'opacity-100' : 'opacity-0'}`} 
+        style={{ 
+          zIndex: 1,
+          pointerEvents: 'auto' // Ensure modal is interactive
+        }}
+      >
         <div className="text-center mb-4 sm:mb-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 leading-tight">Welcome to Quizethic AI</h2>
           <p className="text-white/80 text-sm sm:text-base">Sign in to access your dashboard and start quizzing!</p>

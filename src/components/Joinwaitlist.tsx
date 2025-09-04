@@ -51,7 +51,7 @@ export default function Waitlist({ onSuccess }: WaitlistProps) {
 
   return (
     <div className="w-full flex justify-center mt-0">
-      <div className="bg-gradient-to-r from-purple-500/50 to-pink-500/50 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl shadow-2xl px-4 sm:px-6 py-3 w-full max-w-sm sm:max-w-md">
+      <div className=" bg-gradient-to-r from-purple-500/50 to-pink-500/50 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl shadow-2xl px-4 sm:px-6 py-3 w-full max-w-sm sm:max-w-md">
         <h2 className="text-sm sm:text-base font-semibold text-white text-center mb-1">
           Join the Waitlist 🚀
         </h2>

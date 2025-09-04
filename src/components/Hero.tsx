@@ -117,33 +117,31 @@ const Hero = () => {
             </nav>
             
             {/* Waitlist - Positioned for mobile */}
-            <div className="order-2 sm:order-3 md:absolute md:right-6 md:top-25 md:z-20 md:mr-[400px] drop-shadow-lg w-full sm:w-auto">
+            <div className="order-2 sm:order-3 md:absolute md:right-0 md:top-20 md:z-20 md:mr-[400px] drop-shadow-lg w-full sm:w-auto">
               <Joinwaitlist />
             </div>
             
             {/* Sign up buttons - Responsive layout */}
-            <div className="relative z-10 order-3 sm:order-4 flex flex-col sm:flex-row gap-2 sm:gap-0">
-              <button 
+            <div className="relative z-10 order-3 sm:order-4 flex flex-row gap-2 sm:gap-3">
+              <InteractiveHoverButton 
                 onClick={openSignUp}
                 className="font-semibold min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base"
-               
               >
-               <InteractiveHoverButton>Sign up</InteractiveHoverButton>
-              </button>
-              <button 
-              className="font-semibold min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base"
+                Sign up
+              </InteractiveHoverButton>
+              <InteractiveHoverButton 
                 onClick={openSignIn}
-              
+                className="font-semibold min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base"
               >
-                 <InteractiveHoverButton>Sign in</InteractiveHoverButton>
-              </button>
+                Sign in
+              </InteractiveHoverButton>
             </div>
           </div>
 
      
         
           {/* Main Content */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
+          <div className="mt-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
             {/* Left: Title, subtitle, CTA */}
             <div className="max-w-lg w-full lg:w-auto">
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 drop-shadow leading-tight">
@@ -151,8 +149,8 @@ const Hero = () => {
                 <br />
                 Wizard of Wisdom
               </h1>
-              <p className="text-white/80 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
-                Embark on a Journey of Knowledge Exploration with Our Extensive
+              <p className="text-purple-700 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
+                Embark on a Journey of Knowledge <br/>Exploration with Our Extensive
                 Collection of Interactive Quizzes.
               </p>
               <button 
