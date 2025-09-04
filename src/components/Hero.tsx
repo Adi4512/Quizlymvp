@@ -77,33 +77,30 @@ const Hero = () => {
       {/* Background abstract shapes (placeholders) */}
 
       {/* Glassmorphic Card */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-20 bottom-0 z-10 w-[80%] max-w-full">
+      <div className="absolute left-1/2 -translate-x-1/2 top-4 sm:top-8 md:top-20 bottom-0 z-10 w-[95%] sm:w-[90%] md:w-[80%] max-w-full">
         <div
           id="blur"
-          className="relative bg-white/30 backdrop-blur-lg  rounded-3xl shadow-xl p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
+          className="relative bg-white/30 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
         >
           {/* Header */}
           
-          <div className="flex items-center justify-between mb-14 mt-[-15px]">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 md:mb-14 mt-[-5px] sm:mt-[-10px] md:mt-[-15px] gap-4 sm:gap-0">
             {/* Logo */}
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 order-1 sm:order-1">
               <img 
                 src="/static/quizethic-favicon.svg" 
                 alt="Quizethic AI Logo" 
-                className="w-10 h-10 rounded-full"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
               />
-              <span className="font-bold text-lg text-white drop-shadow">
+              <span className="font-bold text-base sm:text-lg text-white drop-shadow">
                 Quizethic AI
               </span>
               
             </div>
             
-            {/* Navigation */}
-            <div className="absolute right-6 top-25 z-20 mr-[400px] drop-shadow-lg">
-            <Joinwaitlist />
-          </div>
-            <nav className="flex gap-8 text-white font-inter font-semibold text-base">
+            {/* Navigation - Hidden on mobile, shown on larger screens */}
+            <nav className="hidden md:flex gap-6 lg:gap-8 text-white font-inter font-semibold text-sm lg:text-base order-2">
               <NavLink to="home" className="hover:text-white">
                 Home
               </NavLink>
@@ -118,17 +115,23 @@ const Hero = () => {
                 Test
               </NavLink>
             </nav>
-            {/* Sign up button */}
-            <div className="relative z-10">
+            
+            {/* Waitlist - Positioned for mobile */}
+            <div className="order-2 sm:order-3 md:absolute md:right-6 md:top-25 md:z-20 md:mr-[400px] drop-shadow-lg w-full sm:w-auto">
+              <Joinwaitlist />
+            </div>
+            
+            {/* Sign up buttons - Responsive layout */}
+            <div className="relative z-10 order-3 sm:order-4 flex flex-col sm:flex-row gap-2 sm:gap-0">
               <button 
                 onClick={openSignUp}
-                className="mr-4 font-semibold min-w-[120px] text-center"
+                className="font-semibold min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base"
                
               >
                <InteractiveHoverButton>Sign up</InteractiveHoverButton>
               </button>
               <button 
-              className="mr-4 font-semibold min-w-[120px] text-center"
+              className="font-semibold min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base"
                 onClick={openSignIn}
               
               >
@@ -140,15 +143,15 @@ const Hero = () => {
      
         
           {/* Main Content */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
             {/* Left: Title, subtitle, CTA */}
-            <div className="max-w-lg">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow">
+            <div className="max-w-lg w-full lg:w-auto">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 drop-shadow leading-tight">
                 Unleash Your Inner
                 <br />
                 Wizard of Wisdom
               </h1>
-              <p className="text-white/80 mb-6">
+              <p className="text-white/80 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
                 Embark on a Journey of Knowledge Exploration with Our Extensive
                 Collection of Interactive Quizzes.
               </p>
@@ -163,55 +166,55 @@ const Hero = () => {
                     openSignUp();
                   }
                 }}
-                className="cursor-pointer bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition"
+                className="cursor-pointer bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg transition text-sm sm:text-base w-full sm:w-auto"
               >
                 Create Your AI Quiz Now
               </button>
             </div>
             {/* Right: Topic selection */}
-            <div className="flex flex-col items-center">
-              <div className="mt-28 text-white/80 mb-4 text-center">
+            <div className="flex flex-col items-center w-full lg:w-auto">
+              <div className="mt-8 sm:mt-12 lg:mt-28 text-white/80 mb-3 sm:mb-4 text-center text-sm sm:text-base">
                 HI Brainiac! WHAT TOPIC ARE YOU
                 <br />
                 INTERESTED IN?
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 w-full max-w-sm lg:max-w-none">
                 {/* Topic buttons (placeholders for icons) */}
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">🎨</span>
-                  <span>Art</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🎨</span>
+                  <span className="text-xs sm:text-sm font-medium">Art</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">🔬</span>
-                  <span>Science</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🔬</span>
+                  <span className="text-xs sm:text-sm font-medium">Science</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">⛅</span>
-                  <span>Weather</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">⛅</span>
+                  <span className="text-xs sm:text-sm font-medium">Weather</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">⚛️</span>
-                  <span>Physics</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">⚛️</span>
+                  <span className="text-xs sm:text-sm font-medium">Physics</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">🌍</span>
-                  <span>Geography</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🌍</span>
+                  <span className="text-xs sm:text-sm font-medium">Geography</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">➗</span>
-                  <span>Math</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">➗</span>
+                  <span className="text-xs sm:text-sm font-medium">Math</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">🗣️</span>
-                  <span>Language</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🗣️</span>
+                  <span className="text-xs sm:text-sm font-medium">Language</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">🔭</span>
-                  <span>Astronomy</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🔭</span>
+                  <span className="text-xs sm:text-sm font-medium">Astronomy</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-xl p-4 w-28 h-24 text-white">
-                  <span className="mb-2">❤️</span>
-                  <span>Health</span>
+                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                  <span className="mb-1 sm:mb-2 text-lg sm:text-xl">❤️</span>
+                  <span className="text-xs sm:text-sm font-medium">Health</span>
                 </button>
               </div>
             </div>
@@ -225,25 +228,25 @@ const Hero = () => {
       
       {/* Waitlist Popup Modal */}
       {isWaitlistPopupOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={closeWaitlistPopup}
           />
           
-          <div className="relative bg-gradient-to-br from-purple-900/95 to-indigo-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+          <div className="relative bg-gradient-to-br from-purple-900/95 to-indigo-900/95 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md mx-2 sm:mx-4">
             <button
               onClick={closeWaitlistPopup}
-              className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors text-xl font-bold bg-white/10 hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/70 hover:text-white transition-colors text-lg sm:text-xl font-bold bg-white/10 hover:bg-white/20 rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center"
             >
               ✕
             </button>
             
-            <div className="text-center mb-6">
-  <div className="text-xl mb-4 text-white">🤖 + 📚 = 🏆</div>
-  <h3 className="text-md text-white mb-2">
-    Beat the competition—join now for exclusive early access to AI-powered quizzes.
-  </h3>
+            <div className="text-center mb-4 sm:mb-6">
+              <div className="text-lg sm:text-xl mb-3 sm:mb-4 text-white">🤖 + 📚 = 🏆</div>
+              <h3 className="text-sm sm:text-base text-white mb-2 leading-relaxed">
+                Beat the competition—join now for exclusive early access to AI-powered quizzes.
+              </h3>
             </div>
             
             <Joinwaitlist onSuccess={closeWaitlistPopup} />

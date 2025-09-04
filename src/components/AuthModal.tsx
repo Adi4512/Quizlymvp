@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase, auth } from '../lib/supabase';
+import Spline from '@splinetool/react-spline';
 
 const AuthModal = () => {
   const navigate = useNavigate();
@@ -20,6 +21,17 @@ const AuthModal = () => {
   const [signUpLoading, setSignUpLoading] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
   const [signUpError, setSignUpError] = useState<string | null>(null);
+  const [splineLoaded, setSplineLoaded] = useState(false);
+
+  useEffect(() => {
+    // Set a timeout to show the modal content even if Spline takes too long to load
+    const timeout = setTimeout(() => {
+      setSplineLoaded(true);
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
 
   const handleGoogleSignIn = async () => {
     setSignInLoading(true);
@@ -150,39 +162,61 @@ const AuthModal = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-      <div className="relative bg-white/20 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/40">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">Welcome to Quizethic AI</h2>
-          <p className="text-white/80">Sign in to access your dashboard and start quizzing!</p>
+    <div className="min-h-screen relative flex items-center justify-center p-4">
+   
+      <div className="absolute inset-0 bg-[#0B0B0F]" style={{ zIndex: -2 }}></div>
+      
+      <Spline 
+    
+        scene="https://prod.spline.design/03V8AhkNUD7ZlrjS/scene.splinecode"
+        className="absolute inset-0 w-full h-full"
+        style={{ zIndex: -1 }}
+      />
+      
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/20" style={{ zIndex: 0 }}></div>
+      
+      {/* Loading indicator */}
+      {!splineLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 1 }}>
+          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        </div>
+      )}
+      
+      <div className={`relative bg-white/20 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md border border-white/40 transition-opacity duration-500 ${splineLoaded ? 'opacity-100' : 'opacity-0'}`} style={{ zIndex: 1 }}>
+        <div className="text-center mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 leading-tight">Welcome to Quizethic AI</h2>
+          <p className="text-white/80 text-sm sm:text-base">Sign in to access your dashboard and start quizzing!</p>
         </div>
 
         {!showSignIn && !showSignUp ? (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <button 
               onClick={() => setShowSignIn(true)}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl shadow-lg transition-colors text-sm sm:text-base"
             >
               Sign In
             </button>
             
             <button 
               onClick={() => setShowSignUp(true)}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors"
+              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl shadow-lg transition-colors text-sm sm:text-base"
             >
               Create Account
             </button>
             
             <div className="text-center">
-              <p className="text-white/60 text-sm">
+              <p className="text-white/60 text-xs sm:text-sm">
                 Join thousands of users testing their knowledge!
               </p>
             </div>
           </div>
         ) : showSignIn ? (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {signInError && (
-              <div className="p-3 bg-red-500/20 border border-red-400/30 rounded-lg text-red-200 text-sm">
+              <div className="p-2 sm:p-3 bg-red-500/20 border border-red-400/30 rounded-lg text-red-200 text-xs sm:text-sm">
                 {signInError}
               </div>
             )}
@@ -190,9 +224,9 @@ const AuthModal = () => {
             <button
               onClick={handleGoogleSignIn}
               disabled={signInLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -201,20 +235,20 @@ const AuthModal = () => {
               Continue with Google
             </button>
             
-            <div className="flex items-center justify-center my-4">
+            <div className="flex items-center justify-center my-3 sm:my-4">
               <div className="flex-1 h-px bg-white/20"></div>
-              <span className="px-4 text-white/60 text-sm">Or continue with email</span>
+              <span className="px-3 sm:px-4 text-white/60 text-xs sm:text-sm">Or continue with email</span>
               <div className="flex-1 h-px bg-white/20"></div>
             </div>
 
-            <form onSubmit={handleEmailSignIn} className="space-y-4">
+            <form onSubmit={handleEmailSignIn} className="space-y-3 sm:space-y-4">
               <input
                 type="email"
                 name="email"
                 placeholder="Email"
                 value={signInData.email}
                 onChange={handleSignInInputChange}
-                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/20 border border-white/30 rounded-lg sm:rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors text-sm sm:text-base"
                 required
                 disabled={signInLoading}
               />
@@ -224,50 +258,50 @@ const AuthModal = () => {
                 placeholder="Password"
                 value={signInData.password}
                 onChange={handleSignInInputChange}
-                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/20 border border-white/30 rounded-lg sm:rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors text-sm sm:text-base"
                 required
                 disabled={signInLoading}
               />
               <button
                 type="submit"
                 disabled={signInLoading}
-                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed"
+                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 {signInLoading ? 'Signing In...' : 'Sign In'}
               </button>
             </form>
 
-                          <div className="text-center">
-                <p className="text-white/60 text-sm mb-2">
-                  Don't have an account?{' '}
-                  <button 
-                    onClick={() => {
-                      setShowSignIn(false);
-                      setShowSignUp(true);
-                      setSignInData({ email: '', password: '' });
-                      setSignInError(null);
-                    }}
-                    className="text-cyan-300 hover:text-purple-200 underline transition-colors"
-                  >
-                    Sign Up
-                  </button>
-                </p>
+            <div className="text-center">
+              <p className="text-white/60 text-xs sm:text-sm mb-2">
+                Don't have an account?{' '}
                 <button 
                   onClick={() => {
                     setShowSignIn(false);
+                    setShowSignUp(true);
                     setSignInData({ email: '', password: '' });
                     setSignInError(null);
                   }}
-                  className="text-cyan-300 hover:text-purple-200 underline transition-colors text-sm"
+                  className="text-cyan-300 hover:text-purple-200 underline transition-colors"
                 >
-                  ← Back
+                  Sign Up
                 </button>
-              </div>
+              </p>
+              <button 
+                onClick={() => {
+                  setShowSignIn(false);
+                  setSignInData({ email: '', password: '' });
+                  setSignInError(null);
+                }}
+                className="text-cyan-300 hover:text-purple-200 underline transition-colors text-xs sm:text-sm"
+              >
+                ← Back
+              </button>
+            </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {signUpError && (
-              <div className="p-3 bg-red-500/20 border border-red-400/30 rounded-lg text-red-200 text-sm">
+              <div className="p-2 sm:p-3 bg-red-500/20 border border-red-400/30 rounded-lg text-red-200 text-xs sm:text-sm">
                 {signUpError}
               </div>
             )}
@@ -275,9 +309,9 @@ const AuthModal = () => {
             <button
               onClick={handleGoogleSignUp}
               disabled={signUpLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -286,20 +320,20 @@ const AuthModal = () => {
               Continue with Google
             </button>
             
-            <div className="flex items-center justify-center my-4">
+            <div className="flex items-center justify-center my-3 sm:my-4">
               <div className="flex-1 h-px bg-white/20"></div>
-              <span className="px-4 text-white/60 text-sm">Or continue with email</span>
+              <span className="px-3 sm:px-4 text-white/60 text-xs sm:text-sm">Or continue with email</span>
               <div className="flex-1 h-px bg-white/20"></div>
             </div>
 
-            <form onSubmit={handleEmailSignUp} className="space-y-4">
+            <form onSubmit={handleEmailSignUp} className="space-y-3 sm:space-y-4">
               <input
                 type="text"
                 name="username"
                 placeholder="Username"
                 value={signUpData.username}
                 onChange={handleSignUpInputChange}
-                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/20 border border-white/30 rounded-lg sm:rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors text-sm sm:text-base"
                 required
                 disabled={signUpLoading}
               />
@@ -309,7 +343,7 @@ const AuthModal = () => {
                 placeholder="Email"
                 value={signUpData.email}
                 onChange={handleSignUpInputChange}
-                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/20 border border-white/30 rounded-lg sm:rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors text-sm sm:text-base"
                 required
                 disabled={signUpLoading}
               />
@@ -319,7 +353,7 @@ const AuthModal = () => {
                 placeholder="Password"
                 value={signUpData.password}
                 onChange={handleSignUpInputChange}
-                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/20 border border-white/30 rounded-lg sm:rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors text-sm sm:text-base"
                 required
                 disabled={signUpLoading}
               />
@@ -329,52 +363,52 @@ const AuthModal = () => {
                 placeholder="Confirm Password"
                 value={signUpData.confirmPassword}
                 onChange={handleSignUpInputChange}
-                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/20 border border-white/30 rounded-lg sm:rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-purple-400 transition-colors text-sm sm:text-base"
                 required
                 disabled={signUpLoading}
               />
               <button
                 type="submit"
                 disabled={signUpLoading}
-                className="w-full bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-400 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed"
+                className="w-full bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-400 text-white font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl shadow-lg transition-colors disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 {signUpLoading ? 'Creating Account...' : 'Create Account'}
               </button>
             </form>
 
-                          <div className="text-center">
-                <p className="text-white/60 text-sm mb-2">
-                  Already have an account?{' '}
-                  <button 
-                    onClick={() => {
-                      setShowSignUp(false);
-                      setShowSignIn(true);
-                      setSignUpData({ username: '', email: '', password: '', confirmPassword: '' });
-                      setSignUpError(null);
-                    }}
-                    className="text-cyan-300 hover:text-purple-200 underline transition-colors"
-                  >
-                    Sign In
-                  </button>
-                </p>
+            <div className="text-center">
+              <p className="text-white/60 text-xs sm:text-sm mb-2">
+                Already have an account?{' '}
                 <button 
                   onClick={() => {
                     setShowSignUp(false);
+                    setShowSignIn(true);
                     setSignUpData({ username: '', email: '', password: '', confirmPassword: '' });
                     setSignUpError(null);
                   }}
-                  className="text-cyan-300 hover:text-purple-200 underline transition-colors text-sm"
+                  className="text-cyan-300 hover:text-purple-200 underline transition-colors"
                 >
-                  ← Back
+                  Sign In
                 </button>
-              </div>
+              </p>
+              <button 
+                onClick={() => {
+                  setShowSignUp(false);
+                  setSignUpData({ username: '', email: '', password: '', confirmPassword: '' });
+                  setSignUpError(null);
+                }}
+                className="text-cyan-300 hover:text-purple-200 underline transition-colors text-xs sm:text-sm"
+              >
+                ← Back
+              </button>
+            </div>
           </div>
         )}
 
         {/* Close button */}
         <button
           onClick={() => navigate('/')}
-          className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/60 hover:text-white transition-colors text-lg sm:text-xl"
         >
           ✕
         </button>

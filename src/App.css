@@ -117,4 +117,35 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Mobile-first responsive utilities */
+  html {
+    font-size: 14px; /* Base font size for mobile */
+  }
+  
+  @media (min-width: 640px) {
+    html {
+      font-size: 16px; /* Larger font size for tablets and up */
+    }
+  }
+  
+  /* Ensure proper viewport handling */
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Improve touch targets for mobile */
+  button, input, select, textarea {
+    min-height: 44px; /* iOS recommended minimum touch target */
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Smooth scrolling for better mobile experience */
+  html {
+    scroll-behavior: smooth;
+  }
 }
