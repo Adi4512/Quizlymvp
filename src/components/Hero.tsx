@@ -4,13 +4,14 @@ import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import Footer from "./Footer";
 import { supabase } from "../lib/supabase";
+import Joinwaitlist from "./Joinwaitlist";
 
 const Hero = () => {
   const navigate = useNavigate();
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isWaitlistPopupOpen, setIsWaitlistPopupOpen] = useState(false);
 
   const openSignUp = () => {
     setIsSignInOpen(false);
@@ -27,6 +28,10 @@ const Hero = () => {
     setIsSignInOpen(false);
   };
 
+  const closeWaitlistPopup = () => {
+    setIsWaitlistPopupOpen(false);
+  };
+
   // Check authentication status and show popup when component mounts
   useEffect(() => {
     const checkAuth = async () => {
@@ -36,11 +41,16 @@ const Hero = () => {
         // Always show the landing page, regardless of auth status
         // The dashboard will handle its own auth check
         setIsCheckingAuth(false);
-        setShowPopup(true);
+        
+        // Show waitlist popup after a short delay
+        setTimeout(() => {
+          setIsWaitlistPopupOpen(true);
+        }, 1000);
+       
       } catch (error) {
         console.error('Error checking auth status:', error);
         setIsCheckingAuth(false);
-        setShowPopup(true);
+       
       }
     };
 
@@ -68,11 +78,13 @@ const Hero = () => {
       <div className="absolute left-1/2 -translate-x-1/2 top-20 bottom-0 z-10 w-[80%] max-w-full">
         <div
           id="blur"
-          className="bg-white/30 backdrop-blur-lg  rounded-3xl shadow-xl p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
+          className="relative bg-white/30 backdrop-blur-lg  rounded-3xl shadow-xl p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
         >
           {/* Header */}
+          
           <div className="flex items-center justify-between mb-14 mt-[-15px]">
             {/* Logo */}
+            
             <div className="flex items-center gap-2">
               <img 
                 src="/static/quizethic-favicon.svg" 
@@ -82,12 +94,18 @@ const Hero = () => {
               <span className="font-bold text-lg text-white drop-shadow">
                 Quizethic AI
               </span>
+              
             </div>
+            
             {/* Navigation */}
+            <div className="absolute right-6 top-30 z-20 mr-[400px] drop-shadow-lg">
+            <Joinwaitlist />
+          </div>
             <nav className="flex gap-8 text-white font-inter font-semibold text-base">
               <NavLink to="home" className="hover:text-white">
                 Home
               </NavLink>
+              
               <NavLink to="library" className="hover:text-white">
                 Library
               </NavLink>
@@ -114,6 +132,9 @@ const Hero = () => {
               </button>
             </div>
           </div>
+
+     
+        
           {/* Main Content */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
             {/* Left: Title, subtitle, CTA */}
@@ -198,16 +219,43 @@ const Hero = () => {
       {isSignUpOpen && <SignUp isOpen={isSignUpOpen} onClose={closeModals} onSwitchToSignIn={openSignIn} />}
       {isSignInOpen && <SignIn isOpen={isSignInOpen} onClose={closeModals} onSwitchToSignUp={openSignUp} />}
       
+      {/* Waitlist Popup Modal */}
+      {isWaitlistPopupOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={closeWaitlistPopup}
+          />
+          
+          <div className="relative bg-gradient-to-br from-purple-900/95 to-indigo-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <button
+              onClick={closeWaitlistPopup}
+              className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors text-xl font-bold bg-white/10 hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center"
+            >
+              ✕
+            </button>
+            
+            <div className="text-center mb-6">
+  <div className="text-xl mb-4 text-white">🤖 + 📚 = 🏆</div>
+  <h3 className="text-md text-white mb-2">
+    Beat the competition—join now for exclusive early access to AI-powered quizzes.
+  </h3>
+</div>
+            
+            <Joinwaitlist />
+          </div>
+        </div>
+      )}
+      
       {/* Development Notice Popup */}
+      {/*
       {showPopup && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center">
-          {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowPopup(false)}
           />
           
-          {/* Popup */}
           <div className="relative bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-300 rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4">
             <div className="text-center">
               <div className="text-5xl mb-4">🔄</div>
@@ -231,7 +279,6 @@ const Hero = () => {
               </div>
             </div>
             
-            {/* Close button */}
             <button
               onClick={() => setShowPopup(false)}
               className="cursor-pointer absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition-colors text-xl font-bold bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center"
@@ -241,6 +288,7 @@ const Hero = () => {
           </div>
         </div>
       )}
+      */}
       
       {/* Footer only shows on landing page */}
      
