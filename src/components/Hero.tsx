@@ -4,6 +4,8 @@ import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import Footer from "./Footer";
 import { supabase } from "../lib/supabase";
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
+
 import Joinwaitlist from "./Joinwaitlist";
 
 const Hero = () => {
@@ -98,7 +100,7 @@ const Hero = () => {
             </div>
             
             {/* Navigation */}
-            <div className="absolute right-6 top-30 z-20 mr-[400px] drop-shadow-lg">
+            <div className="absolute right-6 top-25 z-20 mr-[400px] drop-shadow-lg">
             <Joinwaitlist />
           </div>
             <nav className="flex gap-8 text-white font-inter font-semibold text-base">
@@ -120,15 +122,17 @@ const Hero = () => {
             <div className="relative z-10">
               <button 
                 onClick={openSignUp}
-                className="mr-4  border border-white/50 px-6 py-2 rounded-full text-white font-semibold hover:bg-white/50 transition z-[9999]"
+                className="mr-4 font-semibold min-w-[120px] text-center"
+               
               >
-                Sign up
+               <InteractiveHoverButton>Sign up</InteractiveHoverButton>
               </button>
               <button 
+              className="mr-4 font-semibold min-w-[120px] text-center"
                 onClick={openSignIn}
-                className="border border-white/50 px-6 py-2 rounded-full text-white font-semibold hover:bg-white/50 transition z-[9999]"
+              
               >
-                Sign in
+                 <InteractiveHoverButton>Sign in</InteractiveHoverButton>
               </button>
             </div>
           </div>
