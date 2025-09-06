@@ -22,6 +22,7 @@ const AuthModal = () => {
   const [signInError, setSignInError] = useState<string | null>(null);
   const [signUpError, setSignUpError] = useState<string | null>(null);
   const [splineLoaded, setSplineLoaded] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -34,9 +35,13 @@ const AuthModal = () => {
 
     checkMobile();
 
-    // Set a timeout to show the modal content even if Spline takes too long to load
+    // Set a timeout to show the modal content even if Spline/video takes too long to load
     const timeout = setTimeout(() => {
-      setSplineLoaded(true);
+      if (isMobile) {
+        setVideoLoaded(true);
+      } else {
+        setSplineLoaded(true);
+      }
     }, isMobile ? 1000 : 2000); // Faster timeout for mobile
 
     return () => clearTimeout(timeout);
@@ -175,7 +180,7 @@ const AuthModal = () => {
     <div className="min-h-screen relative flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[#0B0B0F]" style={{ zIndex: -2 }}></div>
       
-      {/* Optimized Spline for both mobile and desktop */}
+      {/* Background content - Spline for desktop, video for mobile */}
       <div 
         className="absolute inset-0 w-full h-full"
         style={{ 
@@ -183,20 +188,30 @@ const AuthModal = () => {
           pointerEvents: 'none' // Allow clicks to pass through
         }}
       >
-        <Spline 
-          scene="https://prod.spline.design/03V8AhkNUD7ZlrjS/scene.splinecode"
-          style={{ 
-            width: '100%',
-            height: '100%',
-            // Mobile performance optimizations
-            ...(isMobile && {
-              transform: 'scale(0.8)', // Slightly smaller on mobile
-              transformOrigin: 'center',
-              filter: 'blur(0.5px)', // Slight blur to reduce GPU load
-            })
-          }}
-          onLoad={() => setSplineLoaded(true)}
-        />
+        {isMobile ? (
+          // Video background for mobile devices
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            onLoadedData={() => setVideoLoaded(true)}
+            onError={() => setVideoLoaded(true)} // Fallback if video fails to load
+          >
+            <source src="/static/radial-glassmp4.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          // Spline background for desktop devices
+          <Spline 
+            scene="https://prod.spline.design/03V8AhkNUD7ZlrjS/scene.splinecode"
+            style={{ 
+              width: '100%',
+              height: '100%'
+            }}
+            onLoad={() => setSplineLoaded(true)}
+          />
+        )}
       </div>
       
       {/* Overlay for better text readability - stronger on mobile */}
@@ -209,7 +224,7 @@ const AuthModal = () => {
       ></div>
       
       {/* Loading indicator */}
-      {!splineLoaded && (
+      {((isMobile && !videoLoaded) || (!isMobile && !splineLoaded)) && (
         <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 1 }}>
           <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -218,7 +233,7 @@ const AuthModal = () => {
       )}
       
       <div 
-        className={`relative bg-white/20 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md border border-white/40 transition-opacity duration-500 ${splineLoaded ? 'opacity-100' : 'opacity-0'}`} 
+        className={`relative bg-white/20 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md border border-white/40 transition-opacity duration-500 ${(isMobile ? videoLoaded : splineLoaded) ? 'opacity-100' : 'opacity-0'}`} 
         style={{ 
           zIndex: 1,
           pointerEvents: 'auto' // Ensure modal is interactive
