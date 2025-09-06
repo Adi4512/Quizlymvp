@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase, auth } from '../lib/supabase';
 import Spline from '@splinetool/react-spline';
+import LottieLoader from './LottieLoader';
+
 
 const AuthModal = () => {
   const navigate = useNavigate();
@@ -55,7 +57,12 @@ const AuthModal = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+          scopes: 'openid email profile'
         }
       });
       if (error) {
@@ -100,7 +107,12 @@ const AuthModal = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+          scopes: 'openid email profile'
         }
       });
       if (error) {
@@ -225,11 +237,9 @@ const AuthModal = () => {
       
       {/* Loading indicator */}
       {((isMobile && !videoLoaded) || (!isMobile && !splineLoaded)) && (
-        <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 1 }}>
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-          </div>
-        </div>  
+        <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 2 }}>
+          <LottieLoader size="xlarge" />
+        </div>
       )}
       
       <div 

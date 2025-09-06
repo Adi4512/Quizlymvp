@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "../lib/supabase";
+import { gsap } from "gsap";
 
 interface WaitlistProps {
   onSuccess?: () => void;
@@ -9,6 +10,8 @@ export default function Waitlist({ onSuccess }: WaitlistProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,18 +32,36 @@ export default function Waitlist({ onSuccess }: WaitlistProps) {
       setMessage("🎉 You're officially on the list! We'll let you know the moment we launch 🚀");
       setEmail("");
       
-      
-      if (onSuccess) {
-        setTimeout(() => {
-          onSuccess();
-        }, 800); 
-      }
+      // Animate fade out after successful submission
+      setTimeout(() => {
+        if (containerRef.current) {
+          gsap.to(containerRef.current, {
+            opacity: 0,
+            y: -20,
+            scale: 0.95,
+            duration: 0.8,
+            ease: "power2.inOut",
+            onComplete: () => {
+              setIsVisible(false);
+              if (onSuccess) {
+                onSuccess();
+              }
+            }
+          });
+        } else {
+          // Fallback if ref is not available
+          setIsVisible(false);
+          if (onSuccess) {
+            onSuccess();
+          }
+        }
+      }, 2000); // Show success message for 2 seconds before animating out
     } catch (error: any) {
       console.error('Error adding to waitlist:', error);
       
       // Check for duplicate email error
       if (error?.code === '23505' || error?.message?.includes('duplicate') || error?.message?.includes('already exists')) {
-        setMessage("This email is already on our waitlist!");
+        setMessage("Seems like you're too excited but you're already on our waitlist! 😉");
       } else {
         setMessage("Something went wrong. Please try again.");
       }
@@ -49,9 +70,17 @@ export default function Waitlist({ onSuccess }: WaitlistProps) {
     }
   };
 
+  // Don't render if not visible
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <div className="w-full flex justify-center mt-0">
-      <div className=" bg-gradient-to-r from-purple-500/50 to-pink-500/50 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl shadow-2xl px-4 sm:px-6 py-3 w-full max-w-sm sm:max-w-md">
+      <div 
+        ref={containerRef}
+        className=" bg-gradient-to-r from-purple-500/50 to-pink-500/50 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl shadow-2xl px-4 sm:px-6 py-3 w-full max-w-sm sm:max-w-md"
+      >
         <h2 className="text-sm sm:text-base font-semibold text-white text-center mb-1">
           Join the Waitlist 🚀
         </h2>

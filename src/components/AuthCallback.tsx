@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import LottieLoader from './LottieLoader';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // Handle the OAuth callback
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -17,6 +19,15 @@ const AuthCallback = () => {
         }
 
         if (data.session) {
+          // Extract user profile data from Google
+          const user = data.session.user;
+          console.log('User data from Google:', user);
+          
+          // The user metadata should now contain:
+          // - full_name
+          // - avatar_url
+          // - email
+          
           // User is authenticated, redirect to dashboard
           navigate('/dashboard');
         } else {
@@ -34,10 +45,7 @@ const AuthCallback = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-        <p className="text-white text-lg">Completing sign in...</p>
-      </div>
+      <LottieLoader size="xlarge" text="Completing sign in..." />
     </div>
   );
 };

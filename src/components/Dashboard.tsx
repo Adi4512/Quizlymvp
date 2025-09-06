@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import AuthModal from './AuthModal';
+import LottieLoader from './LottieLoader';
 import { gsap } from 'gsap';
+
 
 interface User {
   id: string;
@@ -10,6 +12,8 @@ interface User {
   user_metadata: {
     full_name?: string;
     avatar_url?: string;
+    picture?: string;
+    name?: string;
   };
 }
 
@@ -32,6 +36,7 @@ const Dashboard = () => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
+      
         setUser(session.user as User);
       }
       setShowPopup(true);
@@ -44,6 +49,7 @@ const Dashboard = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_, session) => {
         if (session?.user) {
+        
           setUser(session.user as User);
         } else {
           setUser(null);
@@ -121,10 +127,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white text-lg">Loading...</p>
-        </div>
+        <LottieLoader size="xlarge" />
       </div>
     );
   }
@@ -134,9 +137,36 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen relative">
+      {/* Video Background */}
+      <div className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Video failed to load:', e);
+          }}
+          onLoadStart={() => {
+            console.log('Video loading started');
+          }}
+          onCanPlay={() => {
+            console.log('Video can play');
+          }}
+        >
+          <source src="/static/dashboardvid.webm" type="video/webm" />
+          <source src="/static/dashboardvid.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/40" style={{ zIndex: 0 }}></div>
+
       {/* Header */}
-      <header className="bg-white/10 backdrop-blur-lg border-b border-white/20">
+      <header className="bg-black/30 backdrop-blur-lg border-b border-white/30 relative" style={{ zIndex: 1 }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex justify-between items-center py-3 sm:py-4">
             {/* Logo */}
@@ -153,22 +183,35 @@ const Dashboard = () => {
             <div className="flex items-center gap-2 sm:gap-4">
               {/* User Info - Hidden on mobile, shown on larger screens */}
               <div className="hidden sm:flex items-center gap-3">
-                {user.user_metadata?.avatar_url ? (
-                  <img 
-                    src={user.user_metadata.avatar_url} 
-                    alt="User Avatar" 
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white/20"
-                  />
-                ) : (
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
-                    <span className="text-white font-semibold text-xs sm:text-sm">
-                      {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
+                {(() => {
+                  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+                  const fullName = user.user_metadata?.full_name || user.user_metadata?.name;
+                  
+            
+                  
+                  return avatarUrl ? (
+                    <img 
+                      src={avatarUrl} 
+                      alt="User Avatar" 
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white/20"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      onLoad={() => {
+                        
+                      }}
+                    />
+                  ) : (
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
+                      <span className="text-white font-semibold text-xs sm:text-sm">
+                        {fullName?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  );
+                })()}
                 <div className="text-white">
                   <p className="font-semibold text-xs sm:text-sm">
-                    {user.user_metadata?.full_name || 'User'}
+                    {user.user_metadata?.full_name || user.user_metadata?.name || 'User'}
                   </p>
                   <p className="text-xs text-white/70 hidden lg:block">{user.email}</p>
                 </div>
@@ -176,19 +219,29 @@ const Dashboard = () => {
 
               {/* Mobile User Avatar - Only show avatar on mobile */}
               <div className="sm:hidden">
-                {user.user_metadata?.avatar_url ? (
-                  <img 
-                    src={user.user_metadata.avatar_url} 
-                    alt="User Avatar" 
-                    className="w-8 h-8 rounded-full border-2 border-white/20"
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
-                    <span className="text-white font-semibold text-sm">
-                      {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
+                {(() => {
+                  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+                  const fullName = user.user_metadata?.full_name || user.user_metadata?.name;
+                  
+                  return avatarUrl ? (
+                    <img 
+                      src={avatarUrl} 
+                      alt="User Avatar" 
+                      className="w-8 h-8 rounded-full border-2 border-white/20"
+                      onError={(e) => {
+                       
+                      
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
+                      <span className="text-white font-semibold text-sm">
+                        {fullName?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Hamburger Menu */}
@@ -226,7 +279,7 @@ const Dashboard = () => {
                 {/* Dropdown Menu */}
                 <div 
                   ref={menuRef}
-                  className={`fixed right-4 top-16 sm:absolute sm:right-0 sm:top-full  sm:mt-6 w-40 sm:w-48 bg-gradient-to-br from-purple-900/95 to-indigo-900/95 sm:bg-white/10 backdrop-blur-lg rounded-lg border border-white/20 z-[99999] ${
+                  className={`fixed right-4 top-16 sm:absolute sm:right-0 sm:top-full  sm:mt-6 w-40 sm:w-48 bg-black/60 backdrop-blur-lg rounded-lg border border-white/30 shadow-xl z-[99999] ${
                     isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
                   }`}
                 >
@@ -234,7 +287,7 @@ const Dashboard = () => {
                     {/* Mobile User Info */}
                     <div className="sm:hidden px-4 py-2 border-b border-white/20 mb-2">
                       <p className="font-semibold text-sm text-white">
-                        {user.user_metadata?.full_name || 'User'}
+                        {user.user_metadata?.full_name || user.user_metadata?.name || 'User'}
                       </p>
                       <p className="text-xs text-white/70 hidden sm:block">{user.email}</p>
                     </div>
@@ -244,7 +297,7 @@ const Dashboard = () => {
                         navigate('/');
                         animateMenuClose();
                       }}
-                      className="w-full flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-white hover:bg-white/10 transition-colors text-sm"
+                      className="cursor-pointer w-full flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-white hover:bg-white/10 transition-colors text-sm"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -257,7 +310,7 @@ const Dashboard = () => {
                         handleSignOut();
                         animateMenuClose();
                       }}
-                      className="w-full flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-red-300 hover:bg-red-500/20 transition-colors text-sm"
+                      className="cursor-pointer w-full flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-red-300 hover:bg-red-500/20 transition-colors text-sm"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -275,7 +328,7 @@ const Dashboard = () => {
 
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 relative" style={{ zIndex: 1 }}>
         {/* Welcome Section */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 leading-tight">
@@ -287,31 +340,31 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 -z-0">
-          <div className="bg-white/10  rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/20 -z-0 ">
-            <div className="flex items-center justify-between -z-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-black/40 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/30 shadow-xl">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/70 text-xs sm:text-sm">Quizzes Completed</p>
+                <p className="text-white/80 text-xs sm:text-sm font-medium">Quizzes Completed</p>
                 <p className="text-2xl sm:text-3xl font-bold text-white">0</p>
               </div>
               <div className="text-2xl sm:text-3xl">📊</div>
             </div>
           </div>
           
-          <div className="bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/20">
+          <div className="bg-black/40 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/30 shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/70 text-xs sm:text-sm">Average Score</p>
+                <p className="text-white/80 text-xs sm:text-sm font-medium">Average Score</p>
                 <p className="text-2xl sm:text-3xl font-bold text-white">-</p>
               </div>
               <div className="text-2xl sm:text-3xl">🎯</div>
             </div>
           </div>
           
-          <div className="bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/20 sm:col-span-2 lg:col-span-1">
+          <div className="bg-black/40 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/30 shadow-xl sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/70 text-xs sm:text-sm">Streak</p>
+                <p className="text-white/80 text-xs sm:text-sm font-medium">Streak</p>
                 <p className="text-2xl sm:text-3xl font-bold text-white">0</p>
               </div>
               <div className="text-2xl sm:text-3xl">🔥</div>
@@ -349,11 +402,11 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/20">
+        <div className="bg-black/40 backdrop-blur-lg rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/30 shadow-xl">
           <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Recent Activity</h3>
           <div className="text-center py-6 sm:py-8">
             <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">📝</div>
-            <p className="text-white/70 text-sm sm:text-base">No recent activity yet. Start your first quiz!</p>
+            <p className="text-white/80 text-sm sm:text-base">No recent activity yet. Start your first quiz!</p>
           </div>
         </div>
       </main>
@@ -388,10 +441,10 @@ const Dashboard = () => {
                 </p>
                 <div className="bg-green-100 rounded-lg p-2 sm:p-3 border border-green-200">
                   <p className="text-xs sm:text-sm text-green-800 font-medium">
-                    🎉 <span className="font-bold">Waitlist Feature Coming Soon!</span>
+                    🚀 <span className="font-bold">Join the Waitlist!</span>
                   </p>
                   <p className="text-xs text-green-700 mt-1">
-                    Be the first to know when we launch the full platform
+                    Get early access and exclusive updates before we launch
                   </p>
                 </div>
               </div>
