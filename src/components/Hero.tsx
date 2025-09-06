@@ -73,7 +73,7 @@ const Hero = () => {
 
   return (
     <>
-    <div className="relative min-h-screen w-full bg-[url('/static/bg.png')] overflow-hidden">
+    <div className="relative min-h-screen w-full bg-[url('/static/bg.webp')] overflow-hidden">
       {/* Background abstract shapes (placeholders) */}
 
       {/* Glassmorphic Card */}
@@ -217,8 +217,8 @@ const Hero = () => {
               </div>
             </div>
           </div>
-          <div className="absolute left-40 bottom-0 w-full h-64 bg-[url('/static/bottom.png')] bg-no-repeat bg-left-bottom bg-contain pointer-events-none z-[-1]"></div>
-          <div className="absolute right-0 top-0 w-full h-52 bg-[url('/static/top.png')] bg-no-repeat bg-right-top bg-contain pointer-events-none z-[-1]"></div>
+          <div className="absolute left-40 bottom-0 w-full h-64 bg-[url('/static/bottom.webp')] bg-no-repeat bg-left-bottom bg-contain pointer-events-none z-[-1]"></div>
+          <div className="absolute right-0 top-0 w-full h-52 bg-[url('/static/top.webp')] bg-no-repeat bg-right-top bg-contain pointer-events-none z-[-1]"></div>
         </div>
       </div>
       {isSignUpOpen && <SignUp isOpen={isSignUpOpen} onClose={closeModals} onSwitchToSignIn={openSignIn} />}
