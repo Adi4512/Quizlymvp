@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import AuthModal from './AuthModal';
 import LottieLoader from './LottieLoader';
-import { gsap } from 'gsap';
 import { SideNavbar } from './SideNavbar';
 
 
@@ -19,18 +17,9 @@ interface User {
 }
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  
-  // Refs for GSAP animations
-  const hamburgerRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const line1Ref = useRef<SVGPathElement>(null);
-  const line2Ref = useRef<SVGPathElement>(null);
-  const line3Ref = useRef<SVGPathElement>(null);
 
   useEffect(() => {
     // Get initial session
@@ -62,66 +51,8 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-  };
 
-  // GSAP Animation functions
-  const animateMenuOpen = () => {
-    if (!menuRef.current || !line1Ref.current || !line2Ref.current || !line3Ref.current) return;
-    
-    setIsMenuOpen(true);
-    
-    // Animate hamburger lines to X
-    gsap.to(line1Ref.current, { rotation: 45, y: 6, duration: 0.3, ease: "power2.out" });
-    gsap.to(line2Ref.current, { opacity: 0, duration: 0.2, ease: "power2.out" });
-    gsap.to(line3Ref.current, { rotation: -45, y: -6, duration: 0.3, ease: "power2.out" });
-    
-    // Animate menu dropdown
-    gsap.fromTo(menuRef.current, 
-      { 
-        opacity: 0, 
-        y: -10, 
-        scale: 0.95,
-        transformOrigin: "top right"
-      },
-      { 
-        opacity: 1, 
-        y: 0, 
-        scale: 1,
-        duration: 0.3, 
-        ease: "back.out(1.7)" 
-      }
-    );
-  };
 
-  const animateMenuClose = () => {
-    if (!menuRef.current || !line1Ref.current || !line2Ref.current || !line3Ref.current) return;
-    
-    setIsMenuOpen(false);
-    
-    // Animate hamburger lines back to normal
-    gsap.to(line1Ref.current, { rotation: 0, y: 0, duration: 0.3, ease: "power2.out" });
-    gsap.to(line2Ref.current, { opacity: 1, duration: 0.2, ease: "power2.out" });
-    gsap.to(line3Ref.current, { rotation: 0, y: 0, duration: 0.3, ease: "power2.out" });
-    
-    // Animate menu dropdown out
-    gsap.to(menuRef.current, { 
-      opacity: 0, 
-      y: -10, 
-      scale: 0.95,
-      duration: 0.2, 
-      ease: "power2.in" 
-    });
-  };
-
-  const handleMenuToggle = () => {
-    if (isMenuOpen) {
-      animateMenuClose();
-    } else {
-      animateMenuOpen();
-    }
-  };
 
 
 

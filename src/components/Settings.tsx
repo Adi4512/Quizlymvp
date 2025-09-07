@@ -1,5 +1,6 @@
 
 import { SideNavbar } from './SideNavbar';
+import { motion } from 'framer-motion';
 
 const Settings = () => {
   return (
@@ -39,7 +40,16 @@ const Settings = () => {
       {/* Main Content */}
       <main className="flex-1 relative overflow-y-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8" style={{ zIndex: 1 }}>
         <div className="flex items-center justify-center min-h-full">
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-2xl w-full border border-white/20">
+          <motion.div 
+            className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-2xl w-full border border-white/20"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ 
+              duration: 0.8, 
+              ease: "easeOut",
+              delay: 0.3
+            }}
+          >
             <h1 className="text-3xl font-bold text-white mb-6 text-center">Settings</h1>
             
             <div className="space-y-6">
@@ -64,7 +74,7 @@ const Settings = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </main>
     </div>
