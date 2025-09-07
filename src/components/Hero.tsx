@@ -144,22 +144,31 @@ const Hero = () => {
           <div className="mt-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
             {/* Left: Title, subtitle, CTA */}
             <div className="max-w-lg w-full lg:w-auto">
-              <h1 className=" text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 drop-shadow leading-tight mt-10">
+              <h1 className="mb-10 text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-bold text-white  sm:mb-4 drop-shadow leading-tight mt-16">
               Create Smart Quizzes 
                 <br />
                 on Any  Topic in Seconds
               </h1>
-              <p className="text-white/90 mb-6 sm:mb-8 text-sm sm:text-base leading-relaxed">
-                
-                <Highlighter action="underline" color="#FFD700">
-                  No limits.
+              <p className="text-white mb-6 sm:mb-8 text-base sm:text-lg leading-relaxed font-medium drop-shadow-sm">
+                <Highlighter action="underline" isView={true} color="#6366F1">
+                  Create quizzes
                 </Highlighter>{" "}
-                No hassle.{" "}
-                <Highlighter action="underline" color="#FF6B9D">
-                  Just quizzes
+                on anything.{" "}
+                <Highlighter action="highlight" isView={true} color="#FF6B9D">
+                  No hassle.
                 </Highlighter>{" "}
-                that fit your world.
+                <br />
+                Just{" "}
+                <Highlighter action="underline" isView={true} color="#F59E0B">
+                  your ideas,
+                </Highlighter>{" "}
+                &nbsp;
+
+                <Highlighter action="highlight" isView={true} color="#22D3EE">
+                  powered by AI.
+                </Highlighter>
               </p>
+
               <button 
                 onClick={async () => {
                   // Check if user is authenticated
@@ -171,7 +180,7 @@ const Hero = () => {
                     openSignUp();
                   }
                 }}
-                className="mt-10 cursor-pointer bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-2xl transition-all duration-300 text-sm sm:text-base w-full sm:w-auto transform hover:scale-105 hover:shadow-purple-500/25"
+                className="mt-10  cursor-pointer bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-2xl transition-all duration-300 text-sm sm:text-base w-full sm:w-auto transform hover:scale-105 hover:shadow-purple-500/25"
               >
                 Create Your AI Quiz Now
               </button>
