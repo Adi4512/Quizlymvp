@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import Footer from "./Footer";
+import { Highlighter } from "@/components/magicui/highlighter";
+
 import { supabase } from "../lib/supabase";
 import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 import LottieLoader from "./LottieLoader";
@@ -120,16 +122,16 @@ const Hero = () => {
             </div>
             
             {/* Sign up buttons - Responsive layout */}
-            <div className="relative z-10 order-3 sm:order-4 flex flex-row gap-2 sm:gap-3">
+            <div className="relative z-10 order-3 sm:order-4 flex flex-row gap-3 sm:gap-4">
               <InteractiveHoverButton 
                 onClick={openSignUp}
-                className="font-semibold min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base"
+                className="font-medium min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base opacity-90 hover:opacity-100 transition-opacity"
               >
                 Sign up
               </InteractiveHoverButton>
               <InteractiveHoverButton 
                 onClick={openSignIn}
-                className="font-semibold min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base"
+                className="font-medium min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base opacity-90 hover:opacity-100 transition-opacity"
               >
                 Sign in
               </InteractiveHoverButton>
@@ -142,14 +144,21 @@ const Hero = () => {
           <div className="mt-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
             {/* Left: Title, subtitle, CTA */}
             <div className="max-w-lg w-full lg:w-auto">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 drop-shadow leading-tight">
-                Unleash Your Inner
+              <h1 className=" text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 drop-shadow leading-tight mt-10">
+              Create Smart Quizzes 
                 <br />
-                Wizard of Wisdom
+                on Any  Topic in Seconds
               </h1>
-              <p className="text-purple-700 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
-                Embark on a Journey of Knowledge <br/>Exploration with Our Extensive
-                Collection of Interactive Quizzes.
+              <p className="text-white/90 mb-6 sm:mb-8 text-sm sm:text-base leading-relaxed">
+                
+                <Highlighter action="underline" color="#FFD700">
+                  No limits.
+                </Highlighter>{" "}
+                No hassle.{" "}
+                <Highlighter action="underline" color="#FF6B9D">
+                  Just quizzes
+                </Highlighter>{" "}
+                that fit your world.
               </p>
               <button 
                 onClick={async () => {
@@ -162,53 +171,53 @@ const Hero = () => {
                     openSignUp();
                   }
                 }}
-                className="cursor-pointer bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg transition text-sm sm:text-base w-full sm:w-auto"
+                className="mt-10 cursor-pointer bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-2xl transition-all duration-300 text-sm sm:text-base w-full sm:w-auto transform hover:scale-105 hover:shadow-purple-500/25"
               >
                 Create Your AI Quiz Now
               </button>
             </div>
             {/* Right: Topic selection */}
             <div className="flex flex-col items-center w-full lg:w-auto">
-              <div className="mt-8 sm:mt-12 lg:mt-28 text-white/80 mb-3 sm:mb-4 text-center text-sm sm:text-base">
+              <div className="mt-8 sm:mt-12 lg:mt-16 text-white/70 mb-4 sm:mb-6 text-center text-sm sm:text-base">
                 HI Brainiac! WHAT TOPIC ARE YOU
                 <br />
                 INTERESTED IN?
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 w-full max-w-sm lg:max-w-none">
                 {/* Topic buttons (placeholders for icons) */}
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🎨</span>
                   <span className="text-xs sm:text-sm font-medium">Art</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🔬</span>
                   <span className="text-xs sm:text-sm font-medium">Science</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">⛅</span>
                   <span className="text-xs sm:text-sm font-medium">Weather</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">⚛️</span>
                   <span className="text-xs sm:text-sm font-medium">Physics</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🌍</span>
                   <span className="text-xs sm:text-sm font-medium">Geography</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">➗</span>
                   <span className="text-xs sm:text-sm font-medium">Math</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🗣️</span>
                   <span className="text-xs sm:text-sm font-medium">Language</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🔭</span>
                   <span className="text-xs sm:text-sm font-medium">Astronomy</span>
                 </button>
-                <button className="flex flex-col items-center bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white transition-all duration-200 hover:scale-105">
+                <button className="flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10">
                   <span className="mb-1 sm:mb-2 text-lg sm:text-xl">❤️</span>
                   <span className="text-xs sm:text-sm font-medium">Health</span>
                 </button>
