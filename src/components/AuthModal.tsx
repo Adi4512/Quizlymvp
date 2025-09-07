@@ -275,6 +275,16 @@ const AuthModal = () => {
                 Join thousands of users testing their knowledge!
               </p>
             </div>
+            <div className="text-center">
+              <p className="text-white/60 text-xs sm:text-sm">
+               <button 
+                onClick={() => navigate('/')}
+                className="cursor-pointer hover:scale-105 text-cyan-300 hover:text-purple-6x00 underline transition-colors text-xs sm:text-sm"
+              >
+                ← Back
+              </button>
+              </p>
+            </div>
           </div>
         ) : showSignIn ? (
           <div className="space-y-3 sm:space-y-4">
@@ -471,7 +481,7 @@ const AuthModal = () => {
         {/* Close button */}
         <button
           onClick={() => navigate('/')}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/60 hover:text-white transition-colors text-lg sm:text-xl"
+          className="cursor-pointer absolute top-3 right-3 sm:top-4 sm:right-4 text-white/60 hover:text-white transition-colors text-lg sm:text-xl"
         >
           ✕
         </button>

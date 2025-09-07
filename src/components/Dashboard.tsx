@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import AuthModal from './AuthModal';
 import LottieLoader from './LottieLoader';
 import { gsap } from 'gsap';
+import { SideNavbar } from './SideNavbar';
 
 
 interface User {
@@ -137,7 +138,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen flex">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
         <video
@@ -165,170 +166,13 @@ const Dashboard = () => {
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/40" style={{ zIndex: 0 }}></div>
 
-      {/* Header */}
-      <header className="bg-black/30 backdrop-blur-lg border-b border-white/30 relative" style={{ zIndex: 1 }}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex justify-between items-center py-3 sm:py-4">
-            {/* Logo */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <img 
-                src="/static/quizethic-favicon.svg" 
-                alt="Quizethic AI Logo" 
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full"
-              />
-              <span className="font-bold text-base sm:text-lg lg:text-xl text-white cursor-pointer" onClick={() => navigate('/')}>Quizethic AI</span>
-            </div>
-
-            {/* User Menu */}
-            <div className="flex items-center gap-2 sm:gap-4">
-              {/* User Info - Hidden on mobile, shown on larger screens */}
-              <div className="hidden sm:flex items-center gap-3">
-                {(() => {
-                  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
-                  const fullName = user.user_metadata?.full_name || user.user_metadata?.name;
-                  
-            
-                  
-                  return avatarUrl ? (
-                    <img 
-                      src={avatarUrl} 
-                      alt="User Avatar" 
-                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white/20"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                      onLoad={() => {
-                        
-                      }}
-                    />
-                  ) : (
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
-                      <span className="text-white font-semibold text-xs sm:text-sm">
-                        {fullName?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  );
-                })()}
-                <div className="text-white">
-                  <p className="font-semibold text-xs sm:text-sm">
-                    {user.user_metadata?.full_name || user.user_metadata?.name || 'User'}
-                  </p>
-                  <p className="text-xs text-white/70 hidden lg:block">{user.email}</p>
-                </div>
-              </div>
-
-              {/* Mobile User Avatar - Only show avatar on mobile */}
-              <div className="sm:hidden">
-                {(() => {
-                  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
-                  const fullName = user.user_metadata?.full_name || user.user_metadata?.name;
-                  
-                  return avatarUrl ? (
-                    <img 
-                      src={avatarUrl} 
-                      alt="User Avatar" 
-                      className="w-8 h-8 rounded-full border-2 border-white/20"
-                      onError={(e) => {
-                       
-                      
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
-                      <span className="text-white font-semibold text-sm">
-                        {fullName?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* Hamburger Menu */}
-              <div className="relative">
-                <button 
-                  ref={hamburgerRef}
-                  onClick={handleMenuToggle}
-                  className="cursor-pointer p-1.5 sm:p-2 rounded-lg hover:bg-white/10 transition-colors"
-                >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path 
-                      ref={line1Ref}
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M4 6h16" 
-                    />
-                    <path 
-                      ref={line2Ref}
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M4 12h16" 
-                    />
-                    <path 
-                      ref={line3Ref}
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M4 18h16" 
-                    />
-                  </svg>
-                </button>
-                
-                {/* Dropdown Menu */}
-                <div 
-                  ref={menuRef}
-                  className={`fixed right-4 top-16 sm:absolute sm:right-0 sm:top-full  sm:mt-6 w-40 sm:w-48 bg-black/60 backdrop-blur-lg rounded-lg border border-white/30 shadow-xl z-[99999] ${
-                    isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-                  }`}
-                >
-                  <div className="py-2">
-                    {/* Mobile User Info */}
-                    <div className="sm:hidden px-4 py-2 border-b border-white/20 mb-2">
-                      <p className="font-semibold text-sm text-white">
-                        {user.user_metadata?.full_name || user.user_metadata?.name || 'User'}
-                      </p>
-                      <p className="text-xs text-white/70 hidden sm:block">{user.email}</p>
-                    </div>
-                    
-                    <button
-                      onClick={() => {
-                        navigate('/');
-                        animateMenuClose();
-                      }}
-                      className="cursor-pointer w-full flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-white hover:bg-white/10 transition-colors text-sm"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                      </svg>
-                      Home
-                    </button>
-                    <div className="border-t border-white/20 my-1"></div>
-                    <button
-                      onClick={() => {
-                        handleSignOut();
-                        animateMenuClose();
-                      }}
-                      className="cursor-pointer w-full flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-red-300 hover:bg-red-500/20 transition-colors text-sm"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-
+      {/* Sidebar */}
+      <div className="relative" style={{ zIndex: 1 }}>
+        <SideNavbar />
+      </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 relative" style={{ zIndex: 1 }}>
+      <main className="flex-1 relative overflow-y-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8" style={{ zIndex: 1 }}>
         {/* Welcome Section */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 leading-tight">
