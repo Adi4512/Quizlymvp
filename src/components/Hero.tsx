@@ -73,14 +73,14 @@ const Hero = () => {
 
   return (
     <>
-    <div className="relative min-h-screen w-full bg-[url('/static/bg.webp')] overflow-hidden">
+    <div className="relative min-h-screen w-full bg-[url('/static/bg.webp')] bg-cover bg-no-repeat bg-center overflow-hidden">
       {/* Background abstract shapes (placeholders) */}
 
       {/* Glassmorphic Card */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-4 sm:top-8 md:top-20 bottom-0 z-10 w-[95%] sm:w-[90%] md:w-[80%] max-w-full">
+      <div className="relative z-10 mx-auto mt-4 sm:mt-8 md:mt-20 w-[95%] sm:w-[90%] md:w-[80%] max-w-[1200px]">
         <div
           id="blur"
-          className="relative bg-white/30 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
+          className="relative overflow-hidden bg-white/30 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
         >
           {/* Header */}
           
