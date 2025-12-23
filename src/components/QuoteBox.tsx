@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 
 const QuoteBox = () => {
-  const [quote, setQuote] = useState("");
-  const [author, setAuthor] = useState("");
+  const [quote, setQuote] = useState(
+    "The only way to do great work is to love what you do."
+  );
+  const [author, setAuthor] = useState("Steve Jobs");
 
   const fetchQuote = async () => {
     try {
