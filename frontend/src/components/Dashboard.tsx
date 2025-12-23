@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { supabase } from "../lib/supabase";
 import AuthModal from "./AuthModal";
 import LottieLoader from "./LottieLoader";
@@ -11,6 +13,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 
 import QuoteBox from "./QuoteBox";
 
@@ -26,6 +29,7 @@ interface User {
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
@@ -34,6 +38,9 @@ const Dashboard = () => {
     "Easy" | "Medium" | "Hard" | "Mix" | null
   >(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showProgressBar, setShowProgressBar] = useState(false);
+  const [progressValue, setProgressValue] = useState(0);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Get initial session
@@ -65,46 +72,66 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Cleanup progress interval on unmount
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, []);
+
   const handleGenerateQuiz = async () => {
     if (!searchQuery.trim()) {
-      alert("Please enter a quiz topic");
-      return;
-    }
-
-    if (!selectedDifficulty) {
-      alert("Please select a difficulty level");
+      alert("Please enter something");
       return;
     }
 
     setIsGenerating(true);
+    setShowProgressBar(true);
+    setProgressValue(0);
+
+    // Start progress animation from 0 to 99
+    progressIntervalRef.current = setInterval(() => {
+      setProgressValue((prev) => {
+        if (prev >= 99) {
+          return 99; // Keep at 99 until API responds
+        }
+        // Increment by random number between 5-10
+        const randomIncrement = Math.floor(Math.random() * 6) + 5; // Random between 5-10
+        return Math.min(prev + randomIncrement, 99);
+      });
+    }, 1000); // Update every second
 
     try {
-      // TODO: Integrate with LLM API (OpenRouter) to generate quiz
-      // This is a placeholder - replace with actual API call
-      console.log("Generating quiz for:", {
-        topic: searchQuery,
-        difficulty: selectedDifficulty,
-        userId: user?.id,
+      // Call backend API
+      const response = await axios.post("http://localhost:3000/api/generate", {
+        prompt: searchQuery.trim(),
+        difficulty: selectedDifficulty || "Mix",
       });
 
-      // Placeholder for API call
-      // const response = await fetch('/api/generate-quiz', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     topic: searchQuery,
-      //     difficulty: selectedDifficulty,
-      //     userId: user?.id
-      //   })
-      // });
-      // const quiz = await response.json();
+      const data = response.data;
 
-      // For now, just show an alert
-      alert(
-        `Quiz generation started for "${searchQuery}" with ${selectedDifficulty} difficulty. LLM integration coming soon!`
-      );
+      // Clear interval and complete progress
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      setProgressValue(100);
+
+      // Small delay to show 100% before navigating
+      setTimeout(() => {
+        setShowProgressBar(false);
+        navigate("/quiz", { state: { response: data.response } });
+      }, 500);
     } catch (error) {
       console.error("Error generating quiz:", error);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      setShowProgressBar(false);
+      setProgressValue(0);
       alert("Failed to generate quiz. Please try again.");
     } finally {
       setIsGenerating(false);
@@ -209,22 +236,14 @@ const Dashboard = () => {
                   />
 
                   {/* Search Button */}
-                  <button
+                  <InteractiveHoverButton
                     onClick={handleGenerateQuiz}
                     disabled={
                       !searchQuery.trim() || !selectedDifficulty || isGenerating
                     }
                   >
-                    {isGenerating ? (
-                      <>
-                        <InteractiveHoverButton>...</InteractiveHoverButton>
-                      </>
-                    ) : (
-                      <>
-                        <InteractiveHoverButton>Go</InteractiveHoverButton>
-                      </>
-                    )}
-                  </button>
+                    {isGenerating ? <>...</> : <>Go</>}
+                  </InteractiveHoverButton>
                 </div>
               </div>
 
@@ -238,7 +257,7 @@ const Dashboard = () => {
                 }
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Difficulty" />
+                  <SelectValue placeholder="Choose a level" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Easy">Easy</SelectItem>
@@ -277,6 +296,28 @@ const Dashboard = () => {
           </div>
         </main>
       </div>
+
+      {/* Progress Bar Modal */}
+      {showProgressBar && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 sm:p-12 border border-white/30 shadow-2xl flex flex-col items-center gap-6">
+            <AnimatedCircularProgressBar
+              value={Math.round(progressValue)}
+              gaugePrimaryColor="#8b5cf6"
+              gaugeSecondaryColor="rgba(255, 255, 255, 0.1)"
+              className="size-32 sm:size-40"
+            />
+            <div className="text-center">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                Generating Quiz...
+              </h3>
+              <p className="text-white/70 text-sm sm:text-base">
+                This may take 20-60 seconds
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showPopup && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
