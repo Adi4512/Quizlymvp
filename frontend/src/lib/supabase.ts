@@ -19,8 +19,6 @@ export const auth = {
         data: {
           username: username,
         },
-                redirectTo: "https://quizlymvp.vercel.app/dashboard",
-
       },
     });
     return { data, error };
@@ -30,9 +28,6 @@ export const auth = {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        redirectTo: "https://quizlymvp.vercel.app/dashboard",
-      },
     });
     return { data, error };
   },
