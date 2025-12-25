@@ -43,7 +43,7 @@ OUTPUT FORMAT (JSON only, no markdown):
 Now identify the subjects for: "${topic}"`;
 
   const result = await openRouter.chat.send({
-    model: "google/gemini-2.5-flash",
+    model: "google/gemini-2.5-flash-lite",
     messages: [
       {
         role: "user",

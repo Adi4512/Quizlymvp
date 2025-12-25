@@ -93,7 +93,17 @@ ${difficultyDescriptions[difficulty]}
    - Hard = advanced syllabus questions
    - Mix = combination of all difficulty levels from the same subjects
 
-4. OUTPUT FORMAT (STRICT JSON, no markdown):
+4. EXPLANATION REQUIREMENTS:
+   - Keep explanations CONCISE and BRIEF
+   - Maximum 4 lines per explanation
+   - For math/technical questions: Provide only key steps or hints, not full derivations
+   - Focus on: "Why this answer is correct" or "Key concept/approach"
+   - DO NOT write lengthy step-by-step solutions
+   - Examples:
+     * Good: "Use the formula x = (-b ± √(b²-4ac))/2a. Substituting values gives x = 2 or x = 3."
+     * Bad: Long derivation with every algebraic step shown
+
+5. OUTPUT FORMAT (STRICT JSON, no markdown):
 {
   "topic": "${topic}",
   "difficulty": "${difficulty}",
@@ -109,7 +119,7 @@ ${difficultyDescriptions[difficulty]}
         "D": "Option D"
       },
       "correctAnswer": "A",
-      "explanation": "Brief explanation"
+      "explanation": "Brief 2-4 line explanation with key hint or approach only"
     }
   ]
 }
@@ -139,6 +149,9 @@ Generate EXACTLY ${numberOfQuestions} questions from the subjects above.`;
     jsonString = jsonString.split("```")[1].split("```")[0].trim();
   }
 
+  // Sanitize JSON: remove control characters that break JSON parsing
+  jsonString = jsonString.replace(/[\x00-\x1F\x7F]/g, "");
+
   try {
     const parsed = JSON.parse(jsonString);
 
@@ -155,7 +168,22 @@ Generate EXACTLY ${numberOfQuestions} questions from the subjects above.`;
       );
     }
 
-    return parsed as QuizResult;
+    // Post-process: Truncate explanations to max 4 lines
+    const processedQuiz = parsed as QuizResult;
+    processedQuiz.questions = processedQuiz.questions.map((q) => {
+      if (q.explanation) {
+        // Split by newlines and take first 4 lines
+        const lines = q.explanation.split(/\n/).filter((line) => line.trim());
+        q.explanation = lines.slice(0, 4).join(" ").trim();
+        // If still too long (more than 300 chars), truncate
+        if (q.explanation.length > 300) {
+          q.explanation = q.explanation.substring(0, 297) + "...";
+        }
+      }
+      return q;
+    });
+
+    return processedQuiz;
   } catch (error) {
     console.error("Error parsing quiz generation:", error);
     throw new Error(
