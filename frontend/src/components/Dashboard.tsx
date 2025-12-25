@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../lib/supabase";
+import { getRandomTopics } from "../lib/topics";
 import AuthModal from "./AuthModal";
 import LottieLoader from "./LottieLoader";
 import { SideNavbar } from "./SideNavbar";
@@ -41,6 +43,10 @@ const Dashboard = () => {
   const [showProgressBar, setShowProgressBar] = useState(false);
   const [progressValue, setProgressValue] = useState(0);
   const [numberOfQuestions, setNumberOfQuestions] = useState(5);
+  const [popularTopics, setPopularTopics] = useState<string[]>(
+    getRandomTopics(6)
+  );
+  const [topicsKey, setTopicsKey] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -80,6 +86,15 @@ const Dashboard = () => {
         clearInterval(progressIntervalRef.current);
       }
     };
+  }, []);
+
+  // Rotate entire topic list every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPopularTopics(getRandomTopics(6));
+      setTopicsKey((k) => k + 1);
+    }, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleGenerateQuiz = async () => {
@@ -292,9 +307,16 @@ const Dashboard = () => {
             <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">
               Popular Tags
             </h3>
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              {["JavaScript", "Python", "React", "MERN", "AI & ML"].map(
-                (tag) => (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={topicsKey}
+                className="flex flex-wrap gap-2 sm:gap-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+              >
+                {popularTopics.map((tag) => (
                   <button
                     key={tag}
                     onClick={() => handleTopicClick(tag)}
@@ -302,9 +324,9 @@ const Dashboard = () => {
                   >
                     {tag}
                   </button>
-                )
-              )}
-            </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* Start Quiz Button */}
