@@ -40,6 +40,7 @@ const Dashboard = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showProgressBar, setShowProgressBar] = useState(false);
   const [progressValue, setProgressValue] = useState(0);
+  const [numberOfQuestions, setNumberOfQuestions] = useState(5);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -98,20 +99,18 @@ const Dashboard = () => {
           return 99; // Keep at 99 until API responds
         }
         // Increment by random number between 5-10
-        const randomIncrement = Math.floor(Math.random() * 6) + 5; // Random between 5-10
+        const randomIncrement = Math.floor(Math.random() * 3) + 3; // Random between 5-10
         return Math.min(prev + randomIncrement, 99);
       });
     }, 1000); // Update every second
 
     try {
       // Call backend API
-      const response = await axios.post(
-        "https://quizlymvp.onrender.com/api/generate",
-        {
-          prompt: searchQuery.trim(),
-          difficulty: selectedDifficulty || "Mix",
-        }
-      );
+      const response = await axios.post("http://localhost:3000/api/generate", {
+        prompt: searchQuery.trim(),
+        difficulty: selectedDifficulty || "Mix",
+        numberOfQuestions: numberOfQuestions || 10,
+      });
 
       const data = response.data;
 
@@ -267,6 +266,22 @@ const Dashboard = () => {
                   <SelectItem value="Medium">Medium</SelectItem>
                   <SelectItem value="Hard">Hard</SelectItem>
                   <SelectItem value="Mix">Mix</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Number of Questions Selector */}
+              <Select
+                value={numberOfQuestions.toString() || "5"}
+                onValueChange={(value) => setNumberOfQuestions(parseInt(value))}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Number of Questions" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="15">15</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
                 </SelectContent>
               </Select>
             </div>

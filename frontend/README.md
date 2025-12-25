@@ -15,7 +15,14 @@ React frontend application for Quizethic AI.
    ```env
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_API_URL=http://localhost:3000
    ```
+
+   **Note:**
+
+   - For development: `VITE_API_URL=http://localhost:3000` (or your local backend port)
+   - For production: `VITE_API_URL=https://quizlymvp.onrender.com` (or your production backend URL)
+   - If not set, it defaults to `http://localhost:3000`
 
 3. Run the development server:
 
