@@ -42,12 +42,21 @@ const Dashboard = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showProgressBar, setShowProgressBar] = useState(false);
   const [progressValue, setProgressValue] = useState(0);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [numberOfQuestions, setNumberOfQuestions] = useState(5);
   const [popularTopics, setPopularTopics] = useState<string[]>(
     getRandomTopics(6)
   );
   const [topicsKey, setTopicsKey] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Loading steps for quiz generation
+  const loadingSteps = [
+    { text: "Analyzing syllabus...", icon: "📚" },
+    { text: "Identifying key concepts...", icon: "🔍" },
+    { text: "Curating questions...", icon: "✨" },
+    { text: "Finalizing your quiz...", icon: "🎯" },
+  ];
 
   useEffect(() => {
     // Get initial session
@@ -96,6 +105,23 @@ const Dashboard = () => {
     }, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  // Cycle through loading steps when generating
+  useEffect(() => {
+    if (!showProgressBar) {
+      setLoadingStep(0);
+      return;
+    }
+
+    const stepInterval = setInterval(() => {
+      setLoadingStep((prev) => {
+        if (prev < loadingSteps.length - 1) return prev + 1;
+        return prev;
+      });
+    }, 3000); // Change step every 8 seconds
+
+    return () => clearInterval(stepInterval);
+  }, [showProgressBar, loadingSteps.length]);
 
   const handleGenerateQuiz = async () => {
     if (!searchQuery.trim()) {
@@ -323,7 +349,7 @@ const Dashboard = () => {
                   <button
                     key={tag}
                     onClick={() => handleTopicClick(tag)}
-                    className="bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105"
+                    className="bg-white/15 cursor-pointer hover:bg-white/25 backdrop-blur-sm border border-white/20 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105"
                   >
                     {tag}
                   </button>
@@ -343,22 +369,75 @@ const Dashboard = () => {
       {/* Progress Bar Modal */}
       {showProgressBar && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 sm:p-12 border border-white/30 shadow-2xl flex flex-col items-center gap-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white/10 backdrop-blur-md rounded-2xl p-8 sm:p-12 border border-white/30 shadow-2xl flex flex-col items-center gap-6 w-[340px] sm:w-[400px]"
+          >
             <AnimatedCircularProgressBar
               value={Math.round(progressValue)}
               gaugePrimaryColor="#8b5cf6"
               gaugeSecondaryColor="rgba(255, 255, 255, 0.1)"
               className="size-32 sm:size-40"
             />
-            <div className="text-center">
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                Generating Quiz...
-              </h3>
-              <p className="text-white/70 text-sm sm:text-base">
+
+            {/* Animated Loading Steps */}
+            <div className="text-center space-y-4 w-full">
+              <div className="h-10 flex items-center justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={loadingStep}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="flex items-center justify-center gap-3"
+                  >
+                    <span className="text-2xl">
+                      {loadingSteps[loadingStep].icon}
+                    </span>
+                    <h3 className="text-lg sm:text-xl font-bold text-white whitespace-nowrap">
+                      {loadingSteps[loadingStep].text}
+                    </h3>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Step indicators */}
+              <div className="flex justify-center gap-2 mt-4">
+                {loadingSteps.map((_, index) => (
+                  <motion.div
+                    key={index}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      index <= loadingStep
+                        ? "bg-purple-500 w-6"
+                        : "bg-white/20 w-3"
+                    }`}
+                    initial={false}
+                    animate={{
+                      width: index <= loadingStep ? 24 : 12,
+                      backgroundColor:
+                        index <= loadingStep
+                          ? "#8b5cf6"
+                          : "rgba(255,255,255,0.2)",
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
+                ))}
+              </div>
+
+              <p className="text-white/50 text-xs sm:text-sm mt-2">
                 This may take 20-60 seconds
               </p>
+              <p className="text-white/60 text-[10px] sm:text-xs mt-3">
+                * Quizzes with 20 questions, Hard difficulty, or very specific
+                topics may take longer than 60 seconds to generate.
+                <br />
+                Thank you for your patience.
+              </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
