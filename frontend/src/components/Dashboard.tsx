@@ -121,11 +121,14 @@ const Dashboard = () => {
 
     try {
       // Call backend API
-      const response = await axios.post("http://localhost:3000/api/generate", {
-        prompt: searchQuery.trim(),
-        difficulty: selectedDifficulty || "Mix",
-        numberOfQuestions: numberOfQuestions || 10,
-      });
+      const response = await axios.post(
+        "https://quizlymvp.onrender.com/api/generate",
+        {
+          prompt: searchQuery.trim(),
+          difficulty: selectedDifficulty || "Mix",
+          numberOfQuestions: numberOfQuestions || 10,
+        }
+      );
 
       const data = response.data;
 
