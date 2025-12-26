@@ -16,6 +16,15 @@ import {
 } from "../components/ui/select";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+import {
+  IconHome,
+  IconDashboard,
+  IconUserBolt,
+  IconSettings,
+  IconArrowLeft,
+  IconMenu2,
+  IconX,
+} from "@tabler/icons-react";
 
 import QuoteBox from "./QuoteBox";
 
@@ -45,10 +54,28 @@ const Dashboard = () => {
   const [loadingStep, setLoadingStep] = useState(0);
   const [numberOfQuestions, setNumberOfQuestions] = useState(5);
   const [popularTopics, setPopularTopics] = useState<string[]>(
-    getRandomTopics(6)
+    getRandomTopics(5)
   );
   const [topicsKey, setTopicsKey] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Mobile menu links
+  const mobileMenuLinks = [
+    { label: "Home", icon: IconHome, path: "/" },
+    { label: "Dashboard", icon: IconDashboard, path: "/dashboard" },
+    { label: "Profile", icon: IconUserBolt, path: "/profile" },
+    { label: "Settings", icon: IconSettings, path: "/settings" },
+  ];
+
+  const handleMobileLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setMobileMenuOpen(false);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   // Loading steps for quiz generation
   const loadingSteps = [
@@ -100,7 +127,7 @@ const Dashboard = () => {
   // Rotate entire topic list every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setPopularTopics(getRandomTopics(6));
+      setPopularTopics(getRandomTopics(5));
       setTopicsKey((k) => k + 1);
     }, 10000);
     return () => clearInterval(interval);
@@ -201,10 +228,10 @@ const Dashboard = () => {
   }
 
   return (
-    <>
-      <div className="min-h-screen flex">
+    <div className="h-screen w-screen overflow-x-hidden">
+      <div className="h-full flex flex-col md:flex-row overflow-hidden">
         {/* Video Background */}
-        <div className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
+        <div className="fixed inset-0 w-full h-full" style={{ zIndex: -1 }}>
           <video
             autoPlay
             loop
@@ -222,23 +249,137 @@ const Dashboard = () => {
         </div>
 
         {/* Overlay for better text readability */}
-        <div
-          className="absolute inset-0 bg-black/40"
-          style={{ zIndex: 0 }}
-        ></div>
+        <div className="fixed inset-0 bg-black/40" style={{ zIndex: 0 }}></div>
 
-        {/* Sidebar */}
-        <div className="relative" style={{ zIndex: 1 }}>
+        {/* Desktop Sidebar - hidden on mobile */}
+        <div
+          className="hidden md:block relative shrink-0"
+          style={{ zIndex: 10 }}
+        >
           <SideNavbar />
         </div>
 
+        {/* Mobile Header Bar */}
+        <div className="md:hidden fixed top-0 left-0 right-0 z-[60] px-4 py-3 bg-blur/40 backdrop-blur-lg">
+          <button
+            className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl border border-white/20 transition-colors"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <IconMenu2 className="text-white h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Mobile Sidebar */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="md:hidden fixed inset-0 bg-black/70 z-[70]"
+                onClick={() => setMobileMenuOpen(false)}
+              />
+              {/* Drawer */}
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="md:hidden fixed left-0 top-0 h-full w-[280px] bg-[#0f0f1a] z-[80] flex flex-col border-r border-white/10 shadow-2xl"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/static/quizethic-favicon.svg"
+                      className="h-6 w-6"
+                      alt="Logo"
+                    />
+                    <span className="text-white font-semibold">
+                      Quizethic AI
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    <IconX className="text-white h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Menu Links */}
+                <nav className="flex-1 p-4 space-y-2">
+                  {mobileMenuLinks.map((link) => (
+                    <button
+                      key={link.label}
+                      onClick={() => {
+                        navigate(link.path);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-xl transition-colors"
+                    >
+                      <link.icon className="h-5 w-5" />
+                      <span>{link.label}</span>
+                    </button>
+                  ))}
+                  <button
+                    onClick={handleMobileLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-white/10 rounded-xl transition-colors"
+                  >
+                    <IconArrowLeft className="h-5 w-5" />
+                    <span>Logout</span>
+                  </button>
+                </nav>
+
+                {/* User Info */}
+                <div className="p-4 border-t border-white/10">
+                  <div className="flex items-center gap-3">
+                    {user?.user_metadata?.avatar_url ||
+                    user?.user_metadata?.picture ? (
+                      <img
+                        src={
+                          user?.user_metadata?.avatar_url ||
+                          user?.user_metadata?.picture
+                        }
+                        className="h-10 w-10 rounded-full border-2 border-white/20"
+                        alt="Avatar"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
+                        <span className="text-white font-semibold">
+                          {user?.user_metadata?.full_name?.charAt(0) ||
+                            user?.email?.charAt(0).toUpperCase() ||
+                            "U"}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium truncate">
+                        {user?.user_metadata?.full_name ||
+                          user?.user_metadata?.name ||
+                          "User"}
+                      </p>
+                      <p className="text-white/60 text-sm truncate">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
         {/* Main Content */}
         <main
-          className="flex-1 relative overflow-y-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8"
+          className="flex-1 relative overflow-y-auto px-4 sm:px-4 lg:px-8 py-6 pt-20 md:pt-6 sm:py-6 lg:py-8"
           style={{ zIndex: 1 }}
         >
           {/* Welcome Section */}
-          <div className="mb-8 sm:mb-10 ">
+          <div className="mb-10 sm:mb-10 text-center md:text-left">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-5 leading-tight">
               <span className="bg-gradient-to-r from-white via-purple-200 to-indigo-200 bg-clip-text text-transparent">
                 Practice Smarter,
@@ -248,7 +389,7 @@ const Dashboard = () => {
                 Not Harder
               </span>
             </h1>
-            <p className="text-white/80 text-lg sm:text-xl lg:text-2xl leading-relaxed font-light max-w-2xl ">
+            <p className="text-white/80 text-base sm:text-xl lg:text-2xl leading-relaxed font-light max-w-2xl mx-auto md:mx-0">
               Choose your topic and difficulty -{" "}
               <span className="text-white font-medium">
                 we'll handle the rest.
@@ -257,8 +398,8 @@ const Dashboard = () => {
           </div>
 
           {/* Search Bar with Difficulty Selector */}
-          <div className="flex justify-center mb-6">
-            <div className="w-full max-w-4xl flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex justify-center mb-8 sm:mb-6">
+            <div className="w-full max-w-4xl flex flex-col gap-4 sm:flex-row sm:gap-4">
               {/* Search Bar */}
               <div className="flex-1 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:px-4 sm:py-2 border border-white/30 shadow-lg">
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -293,46 +434,51 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Difficulty Selector */}
-              <Select
-                value={selectedDifficulty || undefined}
-                onValueChange={(value) =>
-                  setSelectedDifficulty(
-                    value as "Easy" | "Medium" | "Hard" | "Mix"
-                  )
-                }
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Choose a level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Easy">Easy</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="Hard">Hard</SelectItem>
-                  <SelectItem value="Mix">Mix</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Selectors Row - side by side on mobile */}
+              <div className="flex flex-row gap-3 sm:contents">
+                {/* Difficulty Selector */}
+                <Select
+                  value={selectedDifficulty || undefined}
+                  onValueChange={(value) =>
+                    setSelectedDifficulty(
+                      value as "Easy" | "Medium" | "Hard" | "Mix"
+                    )
+                  }
+                >
+                  <SelectTrigger className="flex-1 sm:flex-none sm:w-[180px]">
+                    <SelectValue placeholder="Choose a level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Easy">Easy</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="Hard">Hard</SelectItem>
+                    <SelectItem value="Mix">Mix</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              {/* Number of Questions Selector */}
-              <Select
-                value={numberOfQuestions.toString() || "5"}
-                onValueChange={(value) => setNumberOfQuestions(parseInt(value))}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Number of Questions" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="15">15</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                </SelectContent>
-              </Select>
+                {/* Number of Questions Selector */}
+                <Select
+                  value={numberOfQuestions.toString() || "5"}
+                  onValueChange={(value) =>
+                    setNumberOfQuestions(parseInt(value))
+                  }
+                >
+                  <SelectTrigger className="flex-1 sm:flex-none sm:w-[180px]">
+                    <SelectValue placeholder="Questions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
           {/* Popular Tags */}
-          <div className="mb-6 sm:mb-8">
+          <div className="mb-8 sm:mb-8 mt-24 sm:mt-10">
             <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">
               Popular Tags
             </h3>
@@ -358,15 +504,12 @@ const Dashboard = () => {
             </AnimatePresence>
           </div>
 
-          {/* Start Quiz Button */}
-          <div className="mt-8 sm:mt-20 flex justify-center">
-            {" "}
+          <div className="sm:mt-10 flex justify-center pb-6 mt-24">
             <QuoteBox />
           </div>
         </main>
       </div>
 
-      {/* Progress Bar Modal */}
       {showProgressBar && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <motion.div
@@ -498,7 +641,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

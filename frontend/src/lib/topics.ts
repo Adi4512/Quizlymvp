@@ -130,7 +130,7 @@ export const getAllTopics = (): string[] => {
 };
 
 // Get 6 random topics
-export const getRandomTopics = (count: number = 6): string[] => {
+export const getRandomTopics = (count: number = 5): string[] => {
   const allTopics = getAllTopics();
   const shuffled = [...allTopics].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);

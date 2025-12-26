@@ -1,5 +1,5 @@
 "use client";
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar";
@@ -31,7 +31,9 @@ export function SideNavbar() {
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user as User);
       }
@@ -40,15 +42,15 @@ export function SideNavbar() {
     getSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
-        if (session?.user) {
-          setUser(session.user as User);
-        } else {
-          setUser(null);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_, session) => {
+      if (session?.user) {
+        setUser(session.user as User);
+      } else {
+        setUser(null);
       }
-    );
+    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -60,9 +62,8 @@ export function SideNavbar() {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-     
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -70,41 +71,31 @@ export function SideNavbar() {
     {
       label: "Home",
       onClick: () => handleNavigation("/"),
-      icon: (
-        <IconHome className="h-5 w-5 shrink-0 text-white" />
-      ),
+      icon: <IconHome className="h-5 w-5 shrink-0 text-white" />,
     },
     {
-        label: "Dashboard",
-        onClick: () => handleNavigation("/dashboard"),
-        icon: (
-          <IconDashboard className="h-5 w-5 shrink-0 text-white" />
-        ),
-      },
+      label: "Dashboard",
+      onClick: () => handleNavigation("/dashboard"),
+      icon: <IconDashboard className="h-5 w-5 shrink-0 text-white" />,
+    },
     {
       label: "Profile",
       onClick: () => handleNavigation("/profile"),
-      icon: (
-        <IconUserBolt className="h-5 w-5 shrink-0 text-white" />
-      ),
+      icon: <IconUserBolt className="h-5 w-5 shrink-0 text-white" />,
     },
     {
       label: "Settings",
       onClick: () => handleNavigation("/settings"),
-      icon: (
-        <IconSettings className="h-5 w-5 shrink-0 text-white" />
-      ),
+      icon: <IconSettings className="h-5 w-5 shrink-0 text-white" />,
     },
     {
       label: "Logout",
       onClick: handleLogout,
-      icon: (
-        <IconArrowLeft className="h-5 w-5 shrink-0 text-white" />
-      ),
+      icon: <IconArrowLeft className="h-5 w-5 shrink-0 text-white" />,
     },
   ];
   return (
-    <div className="h-screen">
+    <div className="md:h-screen">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
@@ -116,11 +107,17 @@ export function SideNavbar() {
             </div>
           </div>
           <div>
-            <div className="flex items-center gap-3 py-2 cursor-pointer" onClick={() => handleNavigation("/profile")}>
+            <div
+              className="flex items-center gap-3 py-2 cursor-pointer"
+              onClick={() => handleNavigation("/profile")}
+            >
               {(() => {
-                const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-                const fullName = user?.user_metadata?.full_name || user?.user_metadata?.name;
-                
+                const avatarUrl =
+                  user?.user_metadata?.avatar_url ||
+                  user?.user_metadata?.picture;
+                const fullName =
+                  user?.user_metadata?.full_name || user?.user_metadata?.name;
+
                 return avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -130,19 +127,23 @@ export function SideNavbar() {
                     alt="User Avatar"
                     onError={(e) => {
                       // Fallback to initials if image fails to load
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      e.currentTarget.style.display = "none";
+                      e.currentTarget.nextElementSibling?.classList.remove(
+                        "hidden"
+                      );
                     }}
                   />
                 ) : (
                   <div className="h-7 w-7 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
                     <span className="text-white font-semibold text-xs">
-                      {fullName?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "U"}
+                      {fullName?.charAt(0) ||
+                        user?.email?.charAt(0).toUpperCase() ||
+                        "U"}
                     </span>
                   </div>
                 );
               })()}
-              
+
               <div className="flex flex-col">
                 <motion.span
                   animate={{
@@ -151,7 +152,9 @@ export function SideNavbar() {
                   }}
                   className="text-white text-sm font-medium whitespace-nowrap"
                 >
-                  {user?.user_metadata?.full_name || user?.user_metadata?.name || "Quiz-Master"}
+                  {user?.user_metadata?.full_name ||
+                    user?.user_metadata?.name ||
+                    "Quiz-Master"}
                 </motion.span>
                 <motion.span
                   animate={{
@@ -173,7 +176,10 @@ export function SideNavbar() {
 export const Logo = () => {
   return (
     <div className="flex items-center gap-2 h-6">
-      <img src="/static/quizethic-favicon.svg" className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm" />
+      <img
+        src="/static/quizethic-favicon.svg"
+        className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
+      />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -187,7 +193,10 @@ export const Logo = () => {
 export const LogoIcon = () => {
   return (
     <div className="h-6 flex items-center">
-      <img src="/static/quizethic-favicon.svg" className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm" />
+      <img
+        src="/static/quizethic-favicon.svg"
+        className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
+      />
     </div>
   );
 };
