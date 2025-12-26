@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
-import Footer from "./Footer";
+// import Footer from "./Footer";
 import { Highlighter } from "@/components/magicui/highlighter";
 
 import { supabase } from "../lib/supabase";
@@ -370,7 +370,7 @@ const Hero = () => {
         {/* Footer only shows on landing page */}
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };
