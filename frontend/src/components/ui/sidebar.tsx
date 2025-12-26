@@ -1,8 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { IconMenu2, IconX } from "@tabler/icons-react";
+import { motion } from "motion/react";
 
 interface Links {
   label: string;
@@ -105,11 +104,7 @@ export const DesktopSidebar = ({
   );
 };
 
-export const MobileSidebar = ({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"div">) => {
+export const MobileSidebar = (_props: React.ComponentProps<"div">) => {
   // Mobile sidebar is now handled directly in Dashboard.tsx
   // This component is hidden on mobile via parent's "hidden md:block"
   return null;
