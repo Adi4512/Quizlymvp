@@ -479,32 +479,35 @@ const Dashboard = () => {
 
           {/* Popular Tags */}
           <div className="mb-8 sm:mb-8 mt-24 sm:mt-10">
-            <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">
+            <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base sm:ml-0 ml-2">
               Popular Tags
             </h3>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={topicsKey}
-                className="flex flex-wrap gap-2 sm:gap-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, ease: "easeInOut" }}
-              >
-                {popularTopics.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => handleTopicClick(tag)}
-                    className="bg-white/15 cursor-pointer hover:bg-white/25 backdrop-blur-sm border border-white/20 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </motion.div>
-            </AnimatePresence>
+            {/* Fixed height container to prevent layout shift - only on mobile */}
+            <div className="h-[88px] sm:h-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={topicsKey}
+                  className="flex flex-wrap gap-2 sm:gap-3 max-w-xs sm:max-w-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                >
+                  {popularTopics.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => handleTopicClick(tag)}
+                      className="bg-white/15 cursor-pointer hover:bg-white/25 backdrop-blur-sm border border-white/20 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
 
-          <div className="sm:mt-10 flex justify-center pb-6 mt-24">
+          <div className="sm:mt-14 flex justify-center pb-6 mt-24">
             <QuoteBox />
           </div>
         </main>
