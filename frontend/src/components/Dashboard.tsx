@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../lib/supabase";
@@ -41,13 +41,14 @@ interface User {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<
     "Easy" | "Medium" | "Hard" | "Mix" | null
-  >(null);
+  >("Medium");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showProgressBar, setShowProgressBar] = useState(false);
   const [progressValue, setProgressValue] = useState(0);
@@ -84,6 +85,14 @@ const Dashboard = () => {
     { text: "Curating questions...", icon: "✨" },
     { text: "Finalizing your quiz...", icon: "🎯" },
   ];
+
+  // Read topic from URL query parameter and set search query
+  useEffect(() => {
+    const topic = searchParams.get("topic");
+    if (topic) {
+      setSearchQuery(topic);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     // Get initial session
