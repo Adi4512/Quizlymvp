@@ -33,11 +33,17 @@ const QuizPage = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // Track when each question was answered (for per-question timing)
+  const [answerTimestamps, setAnswerTimestamps] = useState<
+    Record<number, number>
+  >({});
 
   const handleOptionClick = (questionNumber: number, option: string) => {
     // Only allow selection if not already answered
     if (selectedAnswers[questionNumber]) return;
     setSelectedAnswers((prev) => ({ ...prev, [questionNumber]: option }));
+    // Record the timestamp when this question was answered
+    setAnswerTimestamps((prev) => ({ ...prev, [questionNumber]: elapsedTime }));
   };
 
   const getOptionStyle = (
@@ -340,6 +346,41 @@ const QuizPage = () => {
                 className="px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
               >
                 Generate New Quiz
+              </button>
+              <button
+                onClick={() => {
+                  // Build metrics data from quiz results
+                  const metricsData = {
+                    questions: quizData.questions.map((q, idx) => {
+                      // Calculate time taken for this question
+                      const prevTimestamp =
+                        idx === 0 ? 0 : answerTimestamps[idx] || 0;
+                      const currentTimestamp =
+                        answerTimestamps[q.questionNumber] || finalTime || 0;
+                      const timeTaken =
+                        idx === 0
+                          ? currentTimestamp
+                          : currentTimestamp - prevTimestamp;
+
+                      return {
+                        question: q.question,
+                        correctAnswer: q.correctAnswer,
+                        userAnswer: selectedAnswers[q.questionNumber] || null,
+                        timeTaken: Math.max(0, timeTaken),
+                        difficulty: quizData.difficulty as
+                          | "Easy"
+                          | "Medium"
+                          | "Hard"
+                          | undefined,
+                      };
+                    }),
+                    totalTime: finalTime || elapsedTime,
+                  };
+                  navigate("/metrics", { state: metricsData });
+                }}
+                className="ml-4 px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
+              >
+                View Metrics
               </button>
             </div>
           </div>

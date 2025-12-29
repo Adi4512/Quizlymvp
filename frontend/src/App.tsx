@@ -9,6 +9,7 @@ import Profile from "./components/Profile";
 import About from "./components/About";
 import Pricing from "./components/Pricing";
 import { Analytics } from "@vercel/analytics/react";
+import Metrics from "./components/Metrics";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/metrics" element={<Metrics />} />
       </Routes>
       <Analytics />
     </Router>
