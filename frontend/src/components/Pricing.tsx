@@ -106,7 +106,9 @@ const Pricing = () => {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative bg-gradient-to-br ${plan.gradient} backdrop-blur-md rounded-2xl p-5 border ${
+              className={`relative bg-gradient-to-br ${
+                plan.gradient
+              } backdrop-blur-md rounded-2xl p-5 border ${
                 plan.popular ? "border-pink-400/50" : "border-white/20"
               }`}
             >
@@ -226,4 +228,3 @@ const Pricing = () => {
 };
 
 export default Pricing;
-
