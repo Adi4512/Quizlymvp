@@ -88,7 +88,7 @@ export default function Metrics() {
         <div className="text-white text-xl mb-4">No quiz data available</div>
         <button
           onClick={() => navigate("/dashboard")}
-          className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
+          className="cursor-pointer px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
         >
           ← Back to Dashboard
         </button>
@@ -267,11 +267,11 @@ export default function Metrics() {
                   onClick={() => setShowMetricInfo(!showMetricInfo)}
                   onMouseEnter={() => setShowMetricInfo(true)}
                   onMouseLeave={() => setShowMetricInfo(false)}
-                  className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-colors"
+                  className=" cursor-pointer rounded-full   text-yellow-400 hover:text-white transition-colors"
                   aria-label="What do these metrics mean?"
                 >
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -288,7 +288,7 @@ export default function Metrics() {
                 {showMetricInfo && (
                   <div className="absolute right-0 top-10 z-50 w-64 bg-slate-900/95 backdrop-blur-md border border-white/20 rounded-lg shadow-xl p-3 animate-in fade-in duration-200">
                     <p className="text-white text-xs font-semibold mb-2">
-                      What do these metrics mean?
+                      What do these metrics mean?S
                     </p>
                     <div className="space-y-2">
                       {METRIC_INFO.map((info) => (
@@ -443,15 +443,9 @@ export default function Metrics() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
           <button
             onClick={() => navigate("/dashboard")}
-            className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
+            className="cursor-pointer px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
           >
             Generate New Quiz
-          </button>
-          <button
-            onClick={() => navigate("/quiz")}
-            className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-lg transition-colors"
-          >
-            Try Again
           </button>
         </div>
       </div>

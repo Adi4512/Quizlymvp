@@ -343,7 +343,7 @@ const QuizPage = () => {
 
               <button
                 onClick={() => navigate("/dashboard")}
-                className="px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
+                className="cursor-pointer px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
               >
                 Generate New Quiz
               </button>
@@ -378,7 +378,7 @@ const QuizPage = () => {
                   };
                   navigate("/metrics", { state: metricsData });
                 }}
-                className="ml-4 px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
+                className="cursor-pointer ml-4 px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
               >
                 View Metrics
               </button>

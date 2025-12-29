@@ -595,64 +595,6 @@ const Dashboard = () => {
           </motion.div>
         </div>
       )}
-
-      {showPopup && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowPopup(false)}
-          />
-
-          {/* Popup */}
-          <div className="relative bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-300 rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-lg mx-2 sm:mx-4">
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4">
-                🚧
-              </div>
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 leading-tight">
-                Dashboard Under Development
-              </h3>
-              <div className="space-y-2 sm:space-y-3 text-gray-700">
-                <p className="text-xs sm:text-sm leading-relaxed">
-                  The current dashboard is not a replica of the original design.
-                  We are actively working on the backend infrastructure.
-                </p>
-                <div className="bg-blue-100 rounded-lg p-2 sm:p-3 border border-blue-200">
-                  <p className="text-xs text-blue-800 font-medium">
-                    <span className="font-bold">Current Status:</span> Backend
-                    Development in Progress
-                  </p>
-                  <p className="text-xs text-blue-700 mt-1">
-                    UI: Testing Interface | Backend: Core Development |
-                    Features: Coming Soon
-                  </p>
-                </div>
-                <p className="text-xs sm:text-sm leading-relaxed">
-                  This UI is just for testing purposes. Thank you for your
-                  patience as we build something amazing!
-                </p>
-                <div className="bg-green-100 rounded-lg p-2 sm:p-3 border border-green-200">
-                  <p className="text-xs sm:text-sm text-green-800 font-medium">
-                    🚀 <span className="font-bold">Join the Waitlist!</span>
-                  </p>
-                  <p className="text-xs text-green-700 mt-1">
-                    Get early access and exclusive updates before we launch
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Close button */}
-            <button
-              onClick={() => setShowPopup(false)}
-              className="cursor-pointer absolute top-2 right-2 sm:top-3 sm:right-3 text-gray-500 hover:text-gray-700 transition-colors text-lg sm:text-xl font-bold bg-white/80 hover:bg-white rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
