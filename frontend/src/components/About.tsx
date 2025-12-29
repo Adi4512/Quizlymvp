@@ -1,7 +1,13 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const navigate = useNavigate();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#C084FC] via-[#A855F7] to-[#7E22CE] font-['Outfit',sans-serif]">

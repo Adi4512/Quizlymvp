@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Line,
@@ -75,6 +75,11 @@ export default function Metrics() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showMetricInfo, setShowMetricInfo] = useState(false);
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Extract state from navigation
   const state = location.state as MetricsState | null;

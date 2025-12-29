@@ -1,7 +1,13 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Pricing = () => {
   const navigate = useNavigate();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const plans = [
     {
