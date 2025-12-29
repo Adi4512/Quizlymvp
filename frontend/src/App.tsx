@@ -6,6 +6,8 @@ import QuizPage from "./components/QuizPage";
 import AuthCallback from "./components/AuthCallback";
 import Settings from "./components/Settings";
 import Profile from "./components/Profile";
+import About from "./components/About";
+import Pricing from "./components/Pricing";
 import { Analytics } from "@vercel/analytics/react";
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/pricing" element={<Pricing />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
       <Analytics />

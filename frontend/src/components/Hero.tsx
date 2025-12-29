@@ -164,108 +164,154 @@ const Hero = () => {
               What topic are you interested in?
             </h3>
           </div>
-          <div className="grid grid-cols-3 gap-3 pb-4">
+          <div className="grid grid-cols-3 gap-2 pb-4">
             <button
-              onClick={() => handleTopicClick("Art")}
-              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-rose-400/30 to-pink-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("UPSC GS-1")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-rose-400/30 to-pink-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">🎨</span>
-              <span className="text-xs font-medium">Art</span>
+              <span className="mb-1 text-lg">📜</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                UPSC GS-1
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("Science")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-emerald-400/30 to-teal-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("MERN stack")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-amber-400/30 to-orange-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">🧪</span>
-              <span className="text-xs font-medium">Science</span>
+              <span className="mb-1 text-lg">🌐</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                MERN
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("Weather")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-amber-400/30 to-orange-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("CLAT Logical Reasoning")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-emerald-400/30 to-teal-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">☀️</span>
-              <span className="text-xs font-medium">Weather</span>
+              <span className="mb-1 text-lg">⚖️</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                CLAT
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("Physics")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-blue-400/30 to-indigo-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("CSAT Logical Reasoning")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-purple-400/30 to-violet-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">⚛️</span>
-              <span className="text-xs font-medium">Physics</span>
+              <span className="mb-1 text-lg">🧠</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                CSAT
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("Geography")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("EU EPSO Reasoning")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-blue-400/30 to-indigo-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">🌍</span>
-              <span className="text-xs font-medium">Geography</span>
+              <span className="mb-1 text-lg">🧩</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                EU EPSO
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("Math")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-pink-400/30 to-rose-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("JEE Advanced Physics")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-cyan-400/30 to-blue-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">🔢</span>
-              <span className="text-xs font-medium">Math</span>
+              <span className="mb-1 text-lg">⚛️</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                JEE Physics
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("Language")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-violet-400/30 to-purple-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("NDA Mathematics")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-base font-bold">文A</span>
-              <span className="text-xs font-medium">Language</span>
+              <span className="mb-1 text-lg">📐</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                NDA Math
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("Astronomy")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-indigo-400/30 to-blue-500/30 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+              onClick={() => handleTopicClick("SSC CGL Quant")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-pink-400/30 to-rose-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">🔭</span>
-              <span className="text-xs font-medium">Astronomy</span>
+              <span className="mb-1 text-lg">➗</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                SSC CGL
+              </span>
             </button>
             <button
-              onClick={() => handleTopicClick("")}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-gray-400/20 to-gray-500/20 rounded-2xl p-3 h-20 text-white/90 transition-all duration-200 active:scale-95 border-2 border-dashed border-white/30"
+              onClick={() => handleTopicClick("GAOKAO Mathematics")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-red-400/30 to-orange-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
             >
-              <span className="mb-1.5 text-xl">+</span>
-              <span className="text-xs font-medium">More</span>
+              <span className="mb-1 text-lg">🇨🇳🧮</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                GAOKAO
+              </span>
+            </button>
+            <button
+              onClick={() => handleTopicClick("SAT Math (Hard)")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-indigo-400/30 to-purple-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+            >
+              <span className="mb-1 text-lg">📈</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                SAT Math
+              </span>
+            </button>
+            <button
+              onClick={() => handleTopicClick("GRE Quantitative")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-teal-400/30 to-cyan-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+            >
+              <span className="mb-1 text-lg">📊</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                GRE Quant
+              </span>
+            </button>
+            <button
+              onClick={() => handleTopicClick("Korean CSAT Math")}
+              className="cursor-pointer flex flex-col items-center justify-center bg-gradient-to-br from-sky-400/30 to-blue-500/30 rounded-2xl p-2 h-[72px] text-white/90 transition-all duration-200 active:scale-95 border border-white/20"
+            >
+              <span className="mb-1 text-lg">🇰🇷📐</span>
+              <span className="text-[10px] font-medium text-center leading-tight">
+                Korean CSAT
+              </span>
             </button>
           </div>
         </div>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-[#1E1B4B]/95 to-[#312E81]/95 backdrop-blur-lg border-t border-white/10 px-4 py-2 z-50">
+        <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl border-t border-white/10 px-4 py-2 z-50">
           <div className="flex items-center justify-around max-w-md mx-auto">
+            {/* Home - Current page */}
             <button className="flex flex-col items-center py-2 px-4 text-white">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
               </svg>
             </button>
-            <button className="flex flex-col items-center py-2 px-4 text-white/60">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </button>
+            {/* Pricing */}
             <button
-              onClick={openSignUp}
-              className="flex items-center justify-center w-14 h-14 -mt-6 bg-gradient-to-br from-[#EC4899] to-[#DB2777] rounded-full shadow-lg shadow-pink-500/40"
+              onClick={() => navigate("/pricing")}
+              className="flex flex-col items-center py-2 px-4 text-white/60"
             >
               <svg
-                className="w-7 h-7 text-white"
+                className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth={2.5}
+                strokeWidth={2}
                 viewBox="0 0 24 24"
               >
-                <path d="M12 5v14M5 12h14" />
+                <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>
-            <button className="flex flex-col items-center py-2 px-4 text-white/60">
+            {/* Create Quiz - Center button */}
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="flex items-center justify-center w-14 h-14 -mt-8 bg-gradient-to-br from-[#EC4899] to-[#2e0919] rounded-full shadow-lg shadow-purple-600/20"
+            >
+              <span className="text-2xl">⚡</span>
+            </button>
+            {/* About */}
+            <button
+              onClick={() => navigate("/about")}
+              className="flex flex-col items-center py-2 px-4 text-white/60"
+            >
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -273,9 +319,10 @@ const Hero = () => {
                 strokeWidth={2}
                 viewBox="0 0 24 24"
               >
-                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>
+            {/* Profile/Sign In */}
             <button
               onClick={openSignIn}
               className="flex flex-col items-center py-2 px-4 text-white/60"
@@ -414,83 +461,89 @@ const Hero = () => {
                   <br />
                   INTERESTED IN?
                 </div>
-                <div className=" grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 w-full max-w-sm lg:max-w-none">
-                  {/* Topic buttons (placeholders for icons) */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 w-full max-w-sm lg:max-w-xl">
+                  {/* Topic buttons */}
                   <button
-                    onClick={() => handleTopicClick("Art")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("UPSC GS-1")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🎨</span>
-                    <span className="text-xs sm:text-sm font-medium">Art</span>
+                    <span className="mb-1 text-lg sm:text-xl">📜</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      UPSC GS-1
+                    </span>
                   </button>
+
                   <button
-                    onClick={() => handleTopicClick("Science")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("MERN")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🔬</span>
-                    <span className="text-xs sm:text-sm font-medium">
-                      Science
+                    <span className="mb-1 text-lg sm:text-xl">🌐</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      MERN
                     </span>
                   </button>
                   <button
-                    onClick={() => handleTopicClick("Weather")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("CSAT Logical Reasoning")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">⛅</span>
-                    <span className="text-xs sm:text-sm font-medium">
-                      Weather
+                    <span className="mb-1 text-lg sm:text-xl">🧠</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      CSAT Reasoning
                     </span>
                   </button>
                   <button
-                    onClick={() => handleTopicClick("Physics")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("EU EPSO Reasoning")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">⚛️</span>
-                    <span className="text-xs sm:text-sm font-medium">
-                      Physics
+                    <span className="mb-1 text-lg sm:text-xl">🧩</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      EU EPSO
                     </span>
                   </button>
                   <button
-                    onClick={() => handleTopicClick("Geography")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("JEE Advanced Physics")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🌍</span>
-                    <span className="text-xs sm:text-sm font-medium">
-                      Geography
+                    <span className="mb-1 text-lg sm:text-xl">⚛️</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      JEE Physics
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => handleTopicClick("GAOKAO Mathematics")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                  >
+                    <span className="mb-1 text-lg sm:text-xl">🇨🇳🧮</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      GAOKAO
                     </span>
                   </button>
                   <button
-                    onClick={() => handleTopicClick("Math")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("SAT Math (Hard)")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">➗</span>
-                    <span className="text-xs sm:text-sm font-medium">Math</span>
-                  </button>
-                  <button
-                    onClick={() => handleTopicClick("Language")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
-                  >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🗣️</span>
-                    <span className="text-xs sm:text-sm font-medium">
-                      Language
+                    <span className="mb-1 text-lg sm:text-xl">📈</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      SAT Math
                     </span>
                   </button>
                   <button
-                    onClick={() => handleTopicClick("Astronomy")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("GRE Quantitative")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">🔭</span>
-                    <span className="text-xs sm:text-sm font-medium">
-                      Astronomy
+                    <span className="mb-1 text-lg sm:text-xl">📊</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      GRE Quant
                     </span>
                   </button>
                   <button
-                    onClick={() => handleTopicClick("Health")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full h-20 sm:h-24 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    onClick={() => handleTopicClick("Korean CSAT Math")}
+                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
                   >
-                    <span className="mb-1 sm:mb-2 text-lg sm:text-xl">❤️</span>
-                    <span className="text-xs sm:text-sm font-medium">
-                      Health
+                    <span className="mb-1 text-lg sm:text-xl">🇰🇷📐</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-center">
+                      Korean CSAT
                     </span>
                   </button>
                 </div>
