@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -64,8 +65,43 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#C084FC] via-[#A855F7] to-[#7E22CE] font-['Outfit',sans-serif]">
-      {/* Header */}
-      <header className="flex items-center justify-between px-5 pt-6 pb-4">
+      {/* Desktop Header */}
+      <header className="hidden md:flex items-center justify-between px-8 lg:px-16 pt-6 pb-4">
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2"
+        >
+          <img
+            src="/static/quizethic-favicon.svg"
+            alt="Quizethic AI Logo"
+            className="w-10 h-10 rounded-xl"
+          />
+          <span className="font-bold text-lg text-white drop-shadow">
+            Quizethic AI
+          </span>
+        </button>
+        
+        {/* Center Navigation */}
+        <Navbar />
+        
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 text-white/80 hover:text-white transition-colors"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </header>
+
+      {/* Mobile Header */}
+      <header className="md:hidden flex items-center justify-between px-5 pt-6 pb-4">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2"

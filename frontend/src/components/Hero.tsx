@@ -10,13 +10,13 @@ import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-b
 import LottieLoader from "./LottieLoader";
 
 import Joinwaitlist from "./Joinwaitlist";
+import Navbar from "./Navbar";
 
 const Hero = () => {
   const navigate = useNavigate();
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [isWaitlistPopupOpen, setIsWaitlistPopupOpen] = useState(false);
 
   const openSignUp = () => {
     setIsSignInOpen(false);
@@ -33,10 +33,6 @@ const Hero = () => {
     setIsSignInOpen(false);
   };
 
-  const closeWaitlistPopup = () => {
-    setIsWaitlistPopupOpen(false);
-  };
-
   const handleTopicClick = (topic: string) => {
     navigate(`/dashboard?topic=${encodeURIComponent(topic)}`);
   };
@@ -50,11 +46,6 @@ const Hero = () => {
         // Always show the landing page, regardless of auth status
         // The dashboard will handle its own auth check
         setIsCheckingAuth(false);
-
-        // Show waitlist popup after a short delay
-        setTimeout(() => {
-          setIsWaitlistPopupOpen(true);
-        }, 1000);
       } catch (error) {
         console.error("Error checking auth status:", error);
         setIsCheckingAuth(false);
@@ -157,12 +148,9 @@ const Hero = () => {
 
           {/* Mobile Topics Section */}
           <div className="mb-4">
-            <p className="text-white/60 text-xs font-medium tracking-wider uppercase mb-1">
-              HI BRAINIAC!
+            <p className="text-xs uppercase tracking-[0.2em] text-purple-200/60 font-medium">
+              Every preparation starts with a choice
             </p>
-            <h3 className="text-white font-semibold text-lg">
-              What topic are you interested in?
-            </h3>
           </div>
           <div className="grid grid-cols-3 gap-2 pb-4">
             <button
@@ -354,10 +342,8 @@ const Hero = () => {
             className="relative overflow-hidden bg-white/30 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
           >
             {/* Header */}
-
             <div className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 md:mb-14 mt-[-5px] sm:mt-[-10px] md:mt-[-15px] gap-4 sm:gap-0">
               {/* Logo */}
-
               <div className="flex items-center gap-2 order-1 sm:order-1">
                 <img
                   src="/static/quizethic-favicon.svg"
@@ -369,30 +355,13 @@ const Hero = () => {
                 </span>
               </div>
 
-              {/* Navigation - Hidden on mobile, shown on larger screens */}
-              {/* <nav className="hidden md:flex gap-6 lg:gap-8 text-white font-inter font-semibold text-sm lg:text-base order-2">
-              <NavLink to="home" className="hover:text-white">
-                Home
-              </NavLink>
-              
-              <NavLink to="library" className="hover:text-white">
-                Library
-              </NavLink>
-              <NavLink to="courses" className="hover:text-white">
-                Courses
-              </NavLink>
-              <NavLink to="test" className="hover:text-white">
-                Test
-              </NavLink>
-            </nav> */}
-
-              {/* Waitlist - Positioned for mobile */}
-              <div className="order-2 sm:order-3 md:absolute md:right-0 md:top-20 md:z-20 md:mr-[400px] drop-shadow-lg w-full sm:w-auto">
-                <Joinwaitlist />
+              {/* Center Navigation */}
+              <div className="order-2 sm:order-2 ">
+                <Navbar />
               </div>
 
               {/* Sign up buttons - Responsive layout */}
-              <div className="relative z-10 order-3 sm:order-4 flex flex-row gap-3 sm:gap-4">
+              <div className="relative z-10 order-3 sm:order-3 flex flex-row gap-3 sm:gap-4">
                 <InteractiveHoverButton
                   onClick={openSignUp}
                   className="font-medium min-w-[100px] sm:min-w-[120px] text-center text-sm sm:text-base opacity-90 hover:opacity-100 transition-opacity"
@@ -409,10 +378,10 @@ const Hero = () => {
             </div>
 
             {/* Main Content */}
-            <div className="mt-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
+            <div className="mt-14 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
               {/* Left: Title, subtitle, CTA */}
               <div className="max-w-lg w-full lg:w-auto">
-                <h1 className="mb-10 text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-bold text-white  sm:mb-4 drop-shadow leading-tight mt-16">
+                <h1 className=" text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-bold text-white  sm:mb-4 drop-shadow leading-tight ">
                   Create Smart Quizzes
                   <br />
                   on Any Topic in Seconds
@@ -454,18 +423,26 @@ const Hero = () => {
                   Create Your AI Quiz Now
                 </button>
               </div>
+
               {/* Right: Topic selection */}
               <div className="flex flex-col items-center w-full lg:w-auto">
-                <div className="mt-8 sm:mt-12 lg:mt-16 text-white/70 mb-4 sm:mb-6 text-center text-sm sm:text-base">
-                  HI Brainiac! WHAT TOPIC ARE YOU
-                  <br />
-                  INTERESTED IN?
+                <div className="mt-8 sm:mt-12 lg:mt-16 mb-4 sm:mb-6 text-center">
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.2em] text-purple-200/90 font-medium">
+                    <Highlighter
+                      action="underline"
+                      isView={true}
+                      color="#A855F7"
+                    >
+                      Every preparation
+                    </Highlighter>{" "}
+                    starts with a choice
+                  </p>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 w-full max-w-sm lg:max-w-xl">
                   {/* Topic buttons */}
                   <button
                     onClick={() => handleTopicClick("UPSC GS-1")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-orange-500/30 hover:bg-orange-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-orange-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">📜</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -475,7 +452,7 @@ const Hero = () => {
 
                   <button
                     onClick={() => handleTopicClick("MERN")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-green-500/30 hover:bg-green-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-green-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">🌐</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -484,7 +461,7 @@ const Hero = () => {
                   </button>
                   <button
                     onClick={() => handleTopicClick("CSAT Logical Reasoning")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-pink-500/30 hover:bg-pink-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-pink-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">🧠</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -493,7 +470,7 @@ const Hero = () => {
                   </button>
                   <button
                     onClick={() => handleTopicClick("EU EPSO Reasoning")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-blue-500/30 hover:bg-blue-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-blue-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">🧩</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -502,7 +479,7 @@ const Hero = () => {
                   </button>
                   <button
                     onClick={() => handleTopicClick("JEE Advanced Physics")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-cyan-500/30 hover:bg-cyan-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-cyan-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">⚛️</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -512,7 +489,7 @@ const Hero = () => {
 
                   <button
                     onClick={() => handleTopicClick("GAOKAO Mathematics")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-red-500/30 hover:bg-red-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-red-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">🇨🇳🧮</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -521,7 +498,7 @@ const Hero = () => {
                   </button>
                   <button
                     onClick={() => handleTopicClick("SAT Math (Hard)")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-violet-500/30 hover:bg-violet-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-violet-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">📈</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -530,7 +507,7 @@ const Hero = () => {
                   </button>
                   <button
                     onClick={() => handleTopicClick("GRE Quantitative")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-amber-500/30 hover:bg-amber-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-amber-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">📊</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -539,7 +516,7 @@ const Hero = () => {
                   </button>
                   <button
                     onClick={() => handleTopicClick("Korean CSAT Math")}
-                    className="cursor-pointer flex flex-col items-center bg-white/15 hover:bg-white/25 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white/90 transition-all duration-200 hover:scale-105 border border-white/10"
+                    className="cursor-pointer flex flex-col items-center bg-indigo-500/30 hover:bg-indigo-500/40 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full h-18 sm:h-20 text-white transition-all duration-200 hover:scale-105 border border-indigo-400/30"
                   >
                     <span className="mb-1 text-lg sm:text-xl">🇰🇷📐</span>
                     <span className="text-[10px] sm:text-xs font-medium text-center">
@@ -553,37 +530,6 @@ const Hero = () => {
             <div className="absolute right-0 top-0 w-full h-52 bg-[url('/static/top.webp')] bg-no-repeat bg-right-top bg-contain pointer-events-none z-[-1]"></div>
           </div>
         </div>
-
-        {/* Waitlist Popup Modal */}
-        {isWaitlistPopupOpen && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-            <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={closeWaitlistPopup}
-            />
-
-            <div className="relative bg-gradient-to-br from-purple-900/95 to-indigo-900/95 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md mx-2 sm:mx-4">
-              <button
-                onClick={closeWaitlistPopup}
-                className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/70 hover:text-white transition-colors text-lg sm:text-xl font-bold bg-white/10 hover:bg-white/20 rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center"
-              >
-                ✕
-              </button>
-
-              <div className="text-center mb-4 sm:mb-6">
-                <div className="text-lg sm:text-xl mb-3 sm:mb-4 text-white">
-                  🤖 + 📚 = 🏆
-                </div>
-                <h3 className="text-sm sm:text-base text-white mb-2 leading-relaxed">
-                  Beat the competition—join now for exclusive early access to
-                  AI-powered quizzes.
-                </h3>
-              </div>
-
-              <Joinwaitlist onSuccess={closeWaitlistPopup} />
-            </div>
-          </div>
-        )}
 
         {/* Development Notice Popup */}
         {/*
