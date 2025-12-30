@@ -44,7 +44,6 @@ const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showPopup, setShowPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<
     "Easy" | "Medium" | "Hard" | "Mix" | null
@@ -103,7 +102,7 @@ const Dashboard = () => {
       if (session?.user) {
         setUser(session.user as User);
       }
-      setShowPopup(true);
+
       setLoading(false);
     };
 
