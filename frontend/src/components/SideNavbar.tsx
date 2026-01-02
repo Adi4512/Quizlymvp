@@ -17,6 +17,8 @@ interface User {
   email: string;
   user_metadata: {
     full_name?: string;
+    display_name?: string;
+    username?: string;
     avatar_url?: string;
     picture?: string;
     name?: string;
@@ -116,7 +118,10 @@ export function SideNavbar() {
                   user?.user_metadata?.avatar_url ||
                   user?.user_metadata?.picture;
                 const fullName =
-                  user?.user_metadata?.full_name || user?.user_metadata?.name;
+                  user?.user_metadata?.full_name ||
+                  user?.user_metadata?.display_name ||
+                  user?.user_metadata?.username ||
+                  user?.user_metadata?.name;
 
                 return avatarUrl ? (
                   <img
@@ -134,7 +139,7 @@ export function SideNavbar() {
                     }}
                   />
                 ) : (
-                  <div className="h-7 w-7 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
+                  <div className="h-4 w-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
                     <span className="text-white font-semibold text-xs">
                       {fullName?.charAt(0) ||
                         user?.email?.charAt(0).toUpperCase() ||
@@ -153,6 +158,8 @@ export function SideNavbar() {
                   className="text-white text-sm font-medium whitespace-nowrap"
                 >
                   {user?.user_metadata?.full_name ||
+                    user?.user_metadata?.display_name ||
+                    user?.user_metadata?.username ||
                     user?.user_metadata?.name ||
                     "Quiz-Master"}
                 </motion.span>

@@ -18,6 +18,8 @@ export const auth = {
       options: {
         data: {
           username: username,
+          display_name: username,
+          full_name: username,
         },
       },
     });

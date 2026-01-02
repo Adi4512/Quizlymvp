@@ -378,7 +378,7 @@ const QuizPage = () => {
                   };
                   navigate("/metrics", { state: metricsData });
                 }}
-                className="cursor-pointer ml-4 px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
+                className="cursor-pointer sm:ml-4 ml-2 sm:mt-0 mt-4 px-5 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg border border-white/30 transition-colors"
               >
                 View Metrics
               </button>

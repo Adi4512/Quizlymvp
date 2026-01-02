@@ -33,6 +33,8 @@ interface User {
   email: string;
   user_metadata: {
     full_name?: string;
+    display_name?: string;
+    username?: string;
     avatar_url?: string;
     picture?: string;
     name?: string;
@@ -175,7 +177,7 @@ const Dashboard = () => {
           return 99; // Keep at 99 until API responds
         }
         // Increment by random number between 5-10
-        const randomIncrement = Math.floor(Math.random() * 3) + 3; // Random between 5-10
+        const randomIncrement = Math.floor(Math.random() * 2) + 2; //
         return Math.min(prev + randomIncrement, 99);
       });
     }, 1000); // Update every second
@@ -359,6 +361,8 @@ const Dashboard = () => {
                       <div className="h-10 w-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/20">
                         <span className="text-white font-semibold">
                           {user?.user_metadata?.full_name?.charAt(0) ||
+                            user?.user_metadata?.display_name?.charAt(0) ||
+                            user?.user_metadata?.username?.charAt(0) ||
                             user?.email?.charAt(0).toUpperCase() ||
                             "U"}
                         </span>
@@ -367,6 +371,8 @@ const Dashboard = () => {
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-medium truncate">
                         {user?.user_metadata?.full_name ||
+                          user?.user_metadata?.display_name ||
+                          user?.user_metadata?.username ||
                           user?.user_metadata?.name ||
                           "User"}
                       </p>

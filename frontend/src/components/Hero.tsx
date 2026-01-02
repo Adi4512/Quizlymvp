@@ -9,7 +9,6 @@ import { supabase } from "../lib/supabase";
 import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 import LottieLoader from "./LottieLoader";
 
-import Joinwaitlist from "./Joinwaitlist";
 import Navbar from "./Navbar";
 
 const Hero = () => {
@@ -84,7 +83,7 @@ const Hero = () => {
           </div>
           <button
             onClick={openSignIn}
-            className="px-4 py-2 text-sm font-medium text-[#7E22CE] bg-white/90 rounded-full hover:bg-white transition-colors shadow-sm"
+            className="px-4 py-1 text-sm font-medium text-[#7E22CE] bg-white/90 rounded-full hover:bg-white transition-colors shadow-sm"
           >
             Log in
           </button>
@@ -103,14 +102,14 @@ const Hero = () => {
             </h1>
             <p className="text-white/90 text-base leading-relaxed mb-6">
               Create quizzes on anything.{" "}
-              <span className="bg-[#EC4899] px-2 py-0.5 rounded text-white font-medium">
+              <Highlighter action="box" isView={true} color="#EC4899">
                 No hassle.
-              </span>
+              </Highlighter>
               <br />
               Just your ideas,{" "}
-              <span className="bg-cyan-400 px-2 py-0.5 rounded text-[#1E1B4B] font-medium">
+              <Highlighter action="highlight" isView={true} color="#22D3EE">
                 powered by AI.
-              </span>
+              </Highlighter>
             </p>
             <button
               onClick={async () => {
@@ -123,31 +122,15 @@ const Hero = () => {
                   openSignUp();
                 }
               }}
-              className="w-full cursor-pointer bg-gradient-to-r from-[#7E22CE] to-[#6366F1] text-white font-semibold px-6 py-4 rounded-2xl shadow-xl transition-all duration-300 text-base flex items-center justify-center gap-2"
+              className="w-full mt-8 cursor-pointer bg-gradient-to-r from-[#7E22CE] to-[#6366F1] text-white font-semibold px-6 py-4 rounded-2xl shadow-xl transition-all duration-300 text-base flex items-center justify-center gap-2"
             >
               <span className="text-yellow-400">⚡</span>
               Create Your AI Quiz Now
             </button>
           </div>
 
-          {/* Mobile Waitlist Card */}
-          <div className="mb-6">
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30 shadow-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">🚀</span>
-                <h2 className="text-white font-semibold text-base">
-                  Join the Waitlist
-                </h2>
-              </div>
-              <p className="text-white/80 text-sm mb-4 leading-relaxed">
-                Your shortcut to smarter prep starts here — join before launch.
-              </p>
-              <Joinwaitlist />
-            </div>
-          </div>
-
           {/* Mobile Topics Section */}
-          <div className="mb-4">
+          <div className="mb-4 text-center mt-12">
             <p className="text-xs uppercase tracking-[0.2em] text-purple-200/60 font-medium">
               Every preparation starts with a choice
             </p>
