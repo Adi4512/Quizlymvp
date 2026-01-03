@@ -142,11 +142,9 @@ export default function Metrics() {
   // Normalize: if stdDev is 0-2s = excellent (90-100), 2-5s = good (70-90), 5-10s = fair (50-70), >10s = poor
   const consistencyScore = Math.max(0, Math.min(100, 100 - stdDev * 5));
 
-  // Error Rate: percentage of incorrect answers (inverted for radar - lower error = higher score)
+  // Error Rate: percentage of incorrect answers (lower is better)
   const incorrectCount = totalQuestions - correctCount;
   const errorRate = Math.round((incorrectCount / totalQuestions) * 100);
-  // Invert for radar display (100 - errorRate so lower errors = higher score)
-  const errorScoreInverted = 100 - errorRate;
 
   // Completion: percentage of questions attempted
   const attemptedCount = questions.filter((q) => q.userAnswer !== null).length;
@@ -160,7 +158,7 @@ export default function Metrics() {
       value: Math.round(consistencyScore),
       fullMark: 100,
     },
-    { metric: "Error Rate", value: errorScoreInverted, fullMark: 100 },
+    { metric: "Error Rate", value: errorRate, fullMark: 100 },
     { metric: "Completion", value: completionRate, fullMark: 100 },
   ];
 
