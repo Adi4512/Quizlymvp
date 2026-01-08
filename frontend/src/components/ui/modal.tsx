@@ -5,7 +5,7 @@
  * Replaces browser alerts with a polished UI.
  */
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type ModalVariant = "success" | "error" | "warning" | "info";
@@ -27,7 +27,7 @@ interface ModalProps {
   autoClose?: number; // Auto close after X milliseconds
 }
 
-const variantStyles: Record<ModalVariant, { icon: JSX.Element; gradient: string; iconBg: string }> = {
+const variantStyles: Record<ModalVariant, { icon: ReactNode; gradient: string; iconBg: string }> = {
   success: {
     icon: (
       <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">

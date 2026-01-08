@@ -76,7 +76,7 @@ const Dashboard = () => {
 
   // Usage tracking state
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
-  const [usageLoading, setUsageLoading] = useState(false);
+  const [, setUsageLoading] = useState(false);
 
   // Modal for notifications
   const { modalProps, showWarning, showError } = useModal();
