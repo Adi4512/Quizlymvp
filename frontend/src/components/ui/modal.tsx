@@ -158,9 +158,9 @@ export function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
-            className="fixed inset-0 flex items-center justify-center z-[101] p-4"
+            className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-none"
           >
-            <div className="bg-[#1a1a2e] rounded-2xl shadow-2xl border border-white/10 max-w-md w-full overflow-hidden">
+            <div className="bg-[#1a1a2e] rounded-2xl shadow-2xl border border-white/10 max-w-md w-full overflow-hidden pointer-events-auto">
               {/* Header with gradient */}
               <div
                 className={`bg-gradient-to-r ${styles.gradient} p-6 text-center`}
@@ -185,16 +185,16 @@ export function Modal({
                 {secondaryAction && (
                   <button
                     onClick={secondaryAction.onClick}
-                    className="flex-1 px-4 py-3 rounded-xl font-semibold text-white/70 bg-white/10 hover:bg-white/20 border border-white/20 transition-colors"
+                    className="flex-1 px-4 py-3 rounded-xl font-semibold text-white/70 bg-white/10 hover:bg-white/20 border border-white/20 transition-colors cursor-pointer"
                   >
                     {secondaryAction.label}
                   </button>
                 )}
                 <button
                   onClick={primaryAction?.onClick || onClose}
-                  className={`flex-1 px-4 py-3 rounded-xl font-semibold text-white bg-gradient-to-r ${styles.gradient} hover:opacity-90 transition-opacity shadow-lg`}
+                  className={`flex-1 px-4 py-3 rounded-xl font-semibold text-white bg-gradient-to-r ${styles.gradient} hover:opacity-90 transition-opacity shadow-lg cursor-pointer`}
                 >
-                  {primaryAction?.label || "OK"}
+                  {primaryAction?.label || "Close"}
                 </button>
               </div>
             </div>

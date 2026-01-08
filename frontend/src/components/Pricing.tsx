@@ -34,7 +34,7 @@ declare global {
 // Centralized config - sync with backend/shared config
 const PRICING_CONFIG = {
   PRO_PRICE_INR: 299, // ₹199-₹399 range
-  SALES_EMAIL: "sales@quizethic.com",
+  SALES_EMAIL: "quizethicai@protonmail.com",
 };
 
 type PlanId = "free" | "pro" | "enterprise";
@@ -127,18 +127,6 @@ const plans: Plan[] = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// HELPER: Sales contact mailto link
-// ═══════════════════════════════════════════════════════════════════════════
-
-const getSalesContactLink = (): string => {
-  const subject = encodeURIComponent("Enterprise Plan Inquiry - Quizethic AI");
-  const body = encodeURIComponent(
-    "Hi,\n\nI'm interested in the Enterprise plan for my organization.\n\nPlease share details about:\n- Pricing\n- Team size options\n- Implementation timeline\n\nThank you!"
-  );
-  return `mailto:${PRICING_CONFIG.SALES_EMAIL}?subject=${subject}&body=${body}`;
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
 // COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -194,8 +182,8 @@ const Pricing = () => {
         break;
 
       case "contact_sales":
-        // Enterprise - open mailto link
-        window.location.href = getSalesContactLink();
+        // Enterprise - navigate to contact page
+        navigate("/contactus");
         break;
     }
   };
@@ -323,7 +311,6 @@ const Pricing = () => {
                   onClick: () =>
                     (window.location.href = `mailto:${PRICING_CONFIG.SALES_EMAIL}`),
                 },
-                secondaryAction: { label: "Try Again", onClick: () => {} },
               }
             );
           }
@@ -354,10 +341,7 @@ const Pricing = () => {
         showError(
           "Payment Failed",
           response.error?.description ||
-            "Your payment could not be processed. Please try again.",
-          {
-            primaryAction: { label: "Try Again", onClick: () => {} },
-          }
+            "Your payment could not be processed. Please try again."
         );
       });
 
@@ -367,10 +351,7 @@ const Pricing = () => {
       setIsProcessing(false);
       showError(
         "Connection Error",
-        "Failed to connect to payment gateway. Please check your internet connection and try again.",
-        {
-          primaryAction: { label: "Try Again", onClick: () => {} },
-        }
+        "Failed to connect to payment gateway. Please check your internet connection and try again."
       );
     }
   };
@@ -593,7 +574,7 @@ const Pricing = () => {
                     <button
                       onClick={() => handlePlanAction(plan)}
                       disabled={isButtonDisabled(plan)}
-                      className={`w-full py-3 rounded-xl font-semibold text-white text-sm sm:text-base transition-all duration-300 hover:opacity-90 active:scale-[0.98] bg-gradient-to-r ${plan.buttonGradient} shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+                      className={`w-full py-3 rounded-xl font-semibold text-white text-sm sm:text-base transition-all duration-300 hover:opacity-90 active:scale-[0.98] bg-gradient-to-r ${plan.buttonGradient} shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2`}
                     >
                       {isProcessing && plan.id === "pro" ? (
                         <>
