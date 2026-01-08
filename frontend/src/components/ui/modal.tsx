@@ -27,10 +27,19 @@ interface ModalProps {
   autoClose?: number; // Auto close after X milliseconds
 }
 
-const variantStyles: Record<ModalVariant, { icon: ReactNode; gradient: string; iconBg: string }> = {
+const variantStyles: Record<
+  ModalVariant,
+  { icon: ReactNode; gradient: string; iconBg: string }
+> = {
   success: {
     icon: (
-      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <svg
+        className="w-8 h-8 text-white"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
+      >
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
       </svg>
     ),
@@ -39,8 +48,18 @@ const variantStyles: Record<ModalVariant, { icon: ReactNode; gradient: string; i
   },
   error: {
     icon: (
-      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      <svg
+        className="w-8 h-8 text-white"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M6 18L18 6M6 6l12 12"
+        />
       </svg>
     ),
     gradient: "from-red-500 to-rose-600",
@@ -48,8 +67,18 @@ const variantStyles: Record<ModalVariant, { icon: ReactNode; gradient: string; i
   },
   warning: {
     icon: (
-      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      <svg
+        className="w-8 h-8 text-white"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
       </svg>
     ),
     gradient: "from-yellow-500 to-orange-500",
@@ -57,8 +86,18 @@ const variantStyles: Record<ModalVariant, { icon: ReactNode; gradient: string; i
   },
   info: {
     icon: (
-      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="w-8 h-8 text-white"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
     ),
     gradient: "from-blue-500 to-indigo-600",
@@ -123,8 +162,12 @@ export function Modal({
           >
             <div className="bg-[#1a1a2e] rounded-2xl shadow-2xl border border-white/10 max-w-md w-full overflow-hidden">
               {/* Header with gradient */}
-              <div className={`bg-gradient-to-r ${styles.gradient} p-6 text-center`}>
-                <div className={`${styles.iconBg} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+              <div
+                className={`bg-gradient-to-r ${styles.gradient} p-6 text-center`}
+              >
+                <div
+                  className={`${styles.iconBg} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}
+                >
                   {styles.icon}
                 </div>
                 <h3 className="text-xl font-bold text-white">{title}</h3>
@@ -191,21 +234,33 @@ export function useModal() {
     setState((prev) => ({ ...prev, isOpen: false }));
   }, []);
 
-  const showSuccess = useCallback((title: string, message: string, options?: Partial<ModalState>) => {
-    showModal({ title, message, variant: "success", ...options });
-  }, [showModal]);
+  const showSuccess = useCallback(
+    (title: string, message: string, options?: Partial<ModalState>) => {
+      showModal({ title, message, variant: "success", ...options });
+    },
+    [showModal]
+  );
 
-  const showError = useCallback((title: string, message: string, options?: Partial<ModalState>) => {
-    showModal({ title, message, variant: "error", ...options });
-  }, [showModal]);
+  const showError = useCallback(
+    (title: string, message: string, options?: Partial<ModalState>) => {
+      showModal({ title, message, variant: "error", ...options });
+    },
+    [showModal]
+  );
 
-  const showWarning = useCallback((title: string, message: string, options?: Partial<ModalState>) => {
-    showModal({ title, message, variant: "warning", ...options });
-  }, [showModal]);
+  const showWarning = useCallback(
+    (title: string, message: string, options?: Partial<ModalState>) => {
+      showModal({ title, message, variant: "warning", ...options });
+    },
+    [showModal]
+  );
 
-  const showInfo = useCallback((title: string, message: string, options?: Partial<ModalState>) => {
-    showModal({ title, message, variant: "info", ...options });
-  }, [showModal]);
+  const showInfo = useCallback(
+    (title: string, message: string, options?: Partial<ModalState>) => {
+      showModal({ title, message, variant: "info", ...options });
+    },
+    [showModal]
+  );
 
   return {
     modalProps: { ...state, onClose: hideModal },
@@ -219,4 +274,3 @@ export function useModal() {
 }
 
 export default Modal;
-
