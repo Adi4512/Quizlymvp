@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const About = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#C084FC] via-[#A855F7] to-[#7E22CE] relative overflow-hidden">
       {/* Desktop Header */}
       <header className="hidden md:flex items-center px-8 lg:px-16 pt-6 pb-4 relative z-10">
         {/* Left: Logo */}
@@ -51,7 +52,7 @@ const About = () => {
               alt="Quizethic AI Logo"
               className="w-10 h-10 rounded-xl"
             />
-            <span className="font-bold text-lg text-gray-800">
+            <span className="font-bold text-lg text-white drop-shadow">
               Quizethic AI
             </span>
           </button>
@@ -59,45 +60,7 @@ const About = () => {
 
         {/* Center: Navigation */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-1 rounded-full px-3 py-2 bg-white/80 backdrop-blur-sm border border-gray-200 shadow-md">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `cursor-pointer px-5 py-2 text-sm font-semibold transition-all duration-200 relative ${
-                  isActive
-                    ? "text-purple-600 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-purple-600 after:rounded-full"
-                    : "text-gray-700 hover:text-purple-600 hover:scale-105"
-                }`
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/pricing"
-              className={({ isActive }) =>
-                `cursor-pointer px-5 py-2 text-sm font-semibold transition-all duration-200 relative ${
-                  isActive
-                    ? "text-purple-600 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-purple-600 after:rounded-full"
-                    : "text-gray-700 hover:text-purple-600 hover:scale-105"
-                }`
-              }
-            >
-              Pricing
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                `cursor-pointer px-5 py-2 text-sm font-semibold transition-all duration-200 relative ${
-                  isActive
-                    ? "text-purple-600 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-purple-600 after:rounded-full"
-                    : "text-gray-700 hover:text-purple-600 hover:scale-105"
-                }`
-              }
-            >
-              About
-            </NavLink>
-          </div>
+          <Navbar />
         </div>
 
         {/* Right: Empty space for balance */}
@@ -115,13 +78,13 @@ const About = () => {
             alt="Quizethic AI Logo"
             className="w-8 h-8 rounded-xl"
           />
-          <span className="font-bold text-base text-gray-800">
+          <span className="font-bold text-base text-white drop-shadow">
             Quizethic AI
           </span>
         </button>
         <button
           onClick={() => navigate(-1)}
-          className="p-2 text-gray-700 hover:text-gray-900 transition-colors"
+          className="p-2 text-white/80 hover:text-white transition-colors"
         >
           <svg
             className="w-6 h-6"
@@ -137,170 +100,173 @@ const About = () => {
 
       {/* Main Content */}
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-12 pt-8 sm:pt-12 md:pt-16">
-        {/* Hero Section */}
-        <section className="text-center mb-16 max-w-3xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-bold text-gray-800 mb-4 leading-tight">
-            About Quizethic AI
-          </h1>
-          <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-500 mx-auto mb-4 rounded-full"></div>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed font-medium">
-            Your AI-powered companion for smarter exam preparation. We're
-            revolutionizing how students prepare for competitive exams
-            worldwide.
-          </p>
-        </section>
-
-        {/* Mission Section */}
-        <section className="max-w-4xl mx-auto mb-16">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-2xl">
-                🎯
-              </div>
-              <h2 className="text-gray-800 font-bold text-xl sm:text-2xl">
-                Our Mission
-              </h2>
-            </div>
-            <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
-              We believe everyone deserves access to high-quality exam
-              preparation. Quizethic AI uses advanced artificial intelligence to
-              create personalized quizzes that adapt to your learning style and
-              help you master any topic efficiently. Our goal is to make exam
-              preparation accessible, affordable, and effective for students
-              everywhere.
+        {/* Glassmorphic Container */}
+        <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.2)] p-6 sm:p-8 lg:p-12">
+          {/* Hero Section */}
+          <section className="text-center mb-12 max-w-3xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-bold text-white mb-4 leading-tight drop-shadow-lg">
+              About Quizethic AI
+            </h1>
+            <div className="w-24 h-1 bg-gradient-to-r from-pink-300 to-white mx-auto mb-4 rounded-full"></div>
+            <p className="text-white/90 text-base sm:text-lg leading-relaxed font-medium">
+              Your AI-powered companion for smarter exam preparation. We're
+              revolutionizing how students prepare for competitive exams
+              worldwide.
             </p>
-          </div>
-        </section>
+          </section>
 
-        {/* Features Grid */}
-        <section className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-gray-800 font-bold text-2xl sm:text-3xl mb-8 text-center">
-            What Makes Us Different
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow"
-              >
-                <div
-                  className={`w-14 h-14 rounded-xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center text-3xl mb-4`}
-                >
-                  {feature.icon}
+          {/* Mission Section */}
+          <section className="mb-12">
+            <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-lg border border-white/30">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-2xl">
+                  🎯
                 </div>
-                <h3 className="text-gray-800 font-semibold text-lg mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {feature.description}
-                </p>
+                <h2 className="text-white font-bold text-xl sm:text-2xl">
+                  Our Mission
+                </h2>
               </div>
-            ))}
-          </div>
-        </section>
+              <p className="text-white/90 text-base sm:text-lg leading-relaxed">
+                We believe everyone deserves access to high-quality exam
+                preparation. Quizethic AI uses advanced artificial intelligence
+                to create personalized quizzes that adapt to your learning style
+                and help you master any topic efficiently. Our goal is to make
+                exam preparation accessible, affordable, and effective for
+                students everywhere.
+              </p>
+            </div>
+          </section>
 
-        {/* Team Section */}
-        <section className="max-w-4xl mx-auto mb-16">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center text-2xl">
-                👥
-              </div>
-              <h2 className="text-gray-800 font-bold text-xl sm:text-2xl">
-                Our Team
-              </h2>
-            </div>
-            <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-6">
-              We're a passionate team of educators, engineers, and AI
-              researchers dedicated to revolutionizing how people prepare for
-              exams worldwide. Our diverse backgrounds in education technology,
-              machine learning, and user experience design drive us to create
-              tools that truly make a difference.
-            </p>
-            <div className="flex items-center gap-2 pt-4 border-t border-gray-200">
-              <span className="text-sm text-gray-500">Built with</span>
-              <span className="text-red-500 text-lg">❤️</span>
-              <span className="text-sm text-gray-500">
-                for learners everywhere
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="max-w-6xl mx-auto mb-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-xl p-6 text-center shadow-md border border-gray-200">
-              <div className="text-3xl sm:text-4xl font-bold text-purple-600 mb-2">
-                100K+
-              </div>
-              <div className="text-gray-600 text-sm sm:text-base">
-                Quizzes Created
-              </div>
-            </div>
-            <div className="bg-white rounded-xl p-6 text-center shadow-md border border-gray-200">
-              <div className="text-3xl sm:text-4xl font-bold text-pink-600 mb-2">
-                50+
-              </div>
-              <div className="text-gray-600 text-sm sm:text-base">
-                Exam Types
-              </div>
-            </div>
-            <div className="bg-white rounded-xl p-6 text-center shadow-md border border-gray-200">
-              <div className="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">
-                10K+
-              </div>
-              <div className="text-gray-600 text-sm sm:text-base">
-                Active Users
-              </div>
-            </div>
-            <div className="bg-white rounded-xl p-6 text-center shadow-md border border-gray-200">
-              <div className="text-3xl sm:text-4xl font-bold text-cyan-600 mb-2">
-                24/7
-              </div>
-              <div className="text-gray-600 text-sm sm:text-base">
-                AI Support
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section className="max-w-4xl mx-auto mb-12">
-          <div className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl p-6 sm:p-8 shadow-lg text-white">
-            <h2 className="text-white font-bold text-xl sm:text-2xl mb-3">
-              Get in Touch
+          {/* Features Grid */}
+          <section className="mb-12">
+            <h2 className="text-white font-bold text-2xl sm:text-3xl mb-8 text-center drop-shadow-lg">
+              What Makes Us Different
             </h2>
-            <p className="text-white/90 text-base sm:text-lg mb-6 leading-relaxed">
-              Have questions or feedback? We'd love to hear from you! Reach out
-              and let's make exam preparation better together.
-            </p>
-            <a
-              href="mailto:QuizethicAI@protonmail.com"
-              className="inline-flex items-center gap-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-6 py-3 rounded-full text-white font-semibold transition-all duration-200 hover:scale-105"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              QuizethicAI@protonmail.com
-            </a>
-          </div>
-        </section>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="bg-white/20 backdrop-blur-xl rounded-xl p-6 shadow-lg border border-white/30 hover:border-white/50 transition-all"
+                >
+                  <div
+                    className={`w-14 h-14 rounded-xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center text-3xl mb-4`}
+                  >
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-white font-semibold text-lg mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-white/80 text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
 
-        {/* Back to Home */}
-        <div className="max-w-4xl mx-auto">
-          <button
-            onClick={() => navigate("/")}
-            className="w-full bg-white text-gray-800 font-semibold py-4 rounded-2xl border-2 border-gray-300 hover:border-gray-400 active:scale-[0.98] transition-all shadow-md hover:shadow-lg"
-          >
-            Back to Home
-          </button>
+          {/* Team Section */}
+          <section className="mb-12">
+            <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-lg border border-white/30">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center text-2xl">
+                  👥
+                </div>
+                <h2 className="text-white font-bold text-xl sm:text-2xl">
+                  Our Team
+                </h2>
+              </div>
+              <p className="text-white/90 text-base sm:text-lg leading-relaxed mb-6">
+                We're a passionate team of educators, engineers, and AI
+                researchers dedicated to revolutionizing how people prepare for
+                exams worldwide. Our diverse backgrounds in education
+                technology, machine learning, and user experience design drive
+                us to create tools that truly make a difference.
+              </p>
+              <div className="flex items-center gap-2 pt-4 border-t border-white/20">
+                <span className="text-sm text-white/70">Built with</span>
+                <span className="text-red-400 text-lg">❤️</span>
+                <span className="text-sm text-white/70">
+                  for learners everywhere
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {/* Stats Section */}
+          <section className="mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white/20 backdrop-blur-xl rounded-xl p-6 text-center shadow-lg border border-white/30">
+                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                  100K+
+                </div>
+                <div className="text-white/80 text-sm sm:text-base">
+                  Quizzes Created
+                </div>
+              </div>
+              <div className="bg-white/20 backdrop-blur-xl rounded-xl p-6 text-center shadow-lg border border-white/30">
+                <div className="text-3xl sm:text-4xl font-bold text-pink-300 mb-2">
+                  50+
+                </div>
+                <div className="text-white/80 text-sm sm:text-base">
+                  Exam Types
+                </div>
+              </div>
+              <div className="bg-white/20 backdrop-blur-xl rounded-xl p-6 text-center shadow-lg border border-white/30">
+                <div className="text-3xl sm:text-4xl font-bold text-cyan-300 mb-2">
+                  10K+
+                </div>
+                <div className="text-white/80 text-sm sm:text-base">
+                  Active Users
+                </div>
+              </div>
+              <div className="bg-white/20 backdrop-blur-xl rounded-xl p-6 text-center shadow-lg border border-white/30">
+                <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">
+                  24/7
+                </div>
+                <div className="text-white/80 text-sm sm:text-base">
+                  AI Support
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Contact Section */}
+          <section className="mb-12">
+            <div className="bg-gradient-to-r from-pink-500/80 to-purple-600/80 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-lg border border-white/30 text-white">
+              <h2 className="text-white font-bold text-xl sm:text-2xl mb-3">
+                Get in Touch
+              </h2>
+              <p className="text-white/90 text-base sm:text-lg mb-6 leading-relaxed">
+                Have questions or feedback? We'd love to hear from you! Reach
+                out and let's make exam preparation better together.
+              </p>
+              <a
+                href="mailto:QuizethicAI@protonmail.com"
+                className="inline-flex items-center gap-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-6 py-3 rounded-full text-white font-semibold transition-all duration-200 hover:scale-105 border border-white/30"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                QuizethicAI@protonmail.com
+              </a>
+            </div>
+          </section>
+
+          {/* Back to Home */}
+          <div>
+            <button
+              onClick={() => navigate("/")}
+              className="w-full bg-white/20 backdrop-blur-md text-white font-semibold py-4 rounded-2xl border border-white/30 hover:bg-white/30 active:scale-[0.98] transition-all shadow-lg"
+            >
+              Back to Home
+            </button>
+          </div>
         </div>
       </main>
     </div>

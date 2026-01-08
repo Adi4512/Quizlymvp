@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { supabase } from "../lib/supabase";
+import { API_URL } from "../lib/api";
 
 interface Question {
   questionNumber: number;
@@ -37,6 +40,7 @@ const QuizPage = () => {
   const [answerTimestamps, setAnswerTimestamps] = useState<
     Record<number, number>
   >({});
+  const [resultSaved, setResultSaved] = useState(false);
 
   const handleOptionClick = (questionNumber: number, option: string) => {
     // Only allow selection if not already answered
@@ -143,6 +147,45 @@ const QuizPage = () => {
       }
     }
   }, [allAnswered, elapsedTime, finalTime]);
+
+  // Save quiz result to database when completed
+  useEffect(() => {
+    const saveQuizResult = async () => {
+      if (!allAnswered || resultSaved || !quizData) return;
+
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session?.user) return;
+
+        await axios.post(`${API_URL}/api/quiz/result`, {
+          userId: session.user.id,
+          topic: quizData.topic,
+          difficulty: quizData.difficulty,
+          totalQuestions: totalQuestions,
+          correctAnswers: correctAnswers,
+          timeTakenSeconds: finalTime || elapsedTime,
+        });
+
+        setResultSaved(true);
+        console.log("✅ Quiz result saved");
+      } catch (error) {
+        console.error("Failed to save quiz result:", error);
+        // Don't block user experience if save fails
+      }
+    };
+
+    saveQuizResult();
+  }, [
+    allAnswered,
+    resultSaved,
+    quizData,
+    totalQuestions,
+    correctAnswers,
+    finalTime,
+    elapsedTime,
+  ]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {

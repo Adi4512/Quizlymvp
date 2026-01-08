@@ -6,13 +6,36 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { inferSyllabus } from "./services/syllabusInference.js";
 import { generateQuiz } from "./services/quizGenerator.js";
+import {
+  createProOrder,
+  verifyPayment,
+  fetchPayment,
+  getRazorpayKeyId,
+  PRO_PLAN,
+} from "./services/razorpayService.js";
+import {
+  getUsageStatus,
+  canGenerateQuiz,
+  incrementUsage,
+  upgradeToPro,
+  recordPayment,
+  getSubscription,
+  TIER_LIMITS,
+} from "./services/subscriptionService.js";
+import {
+  saveQuizResult,
+  getUserStats,
+  getRecentQuizzes,
+  getProfileData,
+  calculateScorePercentage,
+} from "./services/statsService.js";
 
 // Get current directory for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load .env file from root directory (parent of backend folder)
-dotenv.config({ path: join(__dirname, "..", ".env") });
+// Load .env file from backend directory
+dotenv.config({ path: join(__dirname, ".env") });
 
 const app = express();
 const PORT: number = parseInt(process.env.PORT || "3000", 10);
@@ -32,6 +55,7 @@ interface GenerateQuizRequest {
   prompt: string; // Topic name (any topic in the world)
   difficulty: "Easy" | "Medium" | "Hard" | "Mix";
   numberOfQuestions?: number | string;
+  userId?: string; // Required for tier checking
 }
 
 // Output validation - rejects exam metadata questions
@@ -82,17 +106,107 @@ app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Quizethic AI Backend API is running!" });
 });
 
-// Route to call Gemini API via OpenRouter
+// ═══════════════════════════════════════════════════════════════════════════
+// USER STATUS & QUOTA ROUTES
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get user's subscription status and remaining quota
+ * Frontend should call this to display limits and check before generating
+ */
+app.get("/api/user/status/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
+    const status = await getUsageStatus(userId);
+
+    res.json({
+      success: true,
+      ...status,
+      limits: TIER_LIMITS[status.tier],
+    });
+  } catch (error) {
+    console.error("Error fetching user status:", error);
+    res.status(500).json({
+      error: "Failed to fetch user status",
+      // Return safe defaults
+      tier: "free",
+      quizzesToday: 0,
+      dailyLimit: 5,
+      remaining: 5,
+      canGenerate: true,
+      isUnlimited: false,
+    });
+  }
+});
+
+/**
+ * Get subscription details for a user
+ */
+app.get(
+  "/api/user/subscription/:userId",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const subscription = await getSubscription(userId);
+
+      res.json({
+        success: true,
+        subscription,
+      });
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+      res.status(500).json({ error: "Failed to fetch subscription" });
+    }
+  }
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUIZ GENERATION ROUTE (with tier enforcement)
+// ═══════════════════════════════════════════════════════════════════════════
+
 app.post(
   "/api/generate",
   async (req: Request<{}, {}, GenerateQuizRequest>, res: Response) => {
     try {
-      const { prompt, difficulty, numberOfQuestions } = req.body;
+      const { prompt, difficulty, numberOfQuestions, userId } = req.body;
 
       if (!prompt || !difficulty) {
         return res
           .status(400)
           .json({ error: "Prompt and difficulty are required" });
+      }
+
+      // ────────────────────────────────────────────────────────────────
+      // TIER CHECK: Verify user can generate a quiz
+      // ────────────────────────────────────────────────────────────────
+      if (userId) {
+        const { allowed, reason, status } = await canGenerateQuiz(userId);
+
+        if (!allowed) {
+          console.log(`🚫 User ${userId} blocked: ${reason}`);
+          return res.status(403).json({
+            error: "Daily limit reached",
+            message: reason,
+            status, // Include usage status for frontend
+            upgradeRequired: true,
+          });
+        }
+
+        console.log(
+          `✅ User ${userId} authorized (${status.tier}, ${
+            status.quizzesToday
+          }/${status.isUnlimited ? "∞" : status.dailyLimit} today)`
+        );
       }
 
       // Validate numberOfQuestions
@@ -197,13 +311,28 @@ app.post(
         }
       }
 
+      // ────────────────────────────────────────────────────────────────
+      // INCREMENT USAGE (only after successful generation)
+      // ────────────────────────────────────────────────────────────────
+      let newUsageCount = 0;
+      if (userId) {
+        newUsageCount = await incrementUsage(userId);
+        console.log(
+          `📊 Usage incremented for ${userId}: ${newUsageCount} quizzes today`
+        );
+      }
+
       // Convert quiz to JSON string for frontend compatibility
       const responseContent = JSON.stringify(quiz, null, 2);
+
+      // Get updated status to return to frontend
+      const updatedStatus = userId ? await getUsageStatus(userId) : null;
 
       // Return the validated quiz
       res.json({
         success: true,
         response: responseContent,
+        usage: updatedStatus, // Include updated usage for frontend
       });
     } catch (error) {
       console.error("Error calling OpenRouter API:", error);
@@ -217,7 +346,341 @@ app.post(
   }
 );
 
+// ═══════════════════════════════════════════════════════════════════════════
+// USER STATS & PROFILE ROUTES
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Save quiz result after user completes a quiz
+ */
+interface SaveQuizResultRequest {
+  userId: string;
+  topic: string;
+  difficulty: "Easy" | "Medium" | "Hard" | "Mix";
+  totalQuestions: number;
+  correctAnswers: number;
+  timeTakenSeconds?: number;
+}
+
+app.post(
+  "/api/quiz/result",
+  async (req: Request<{}, {}, SaveQuizResultRequest>, res: Response) => {
+    try {
+      const { userId, topic, difficulty, totalQuestions, correctAnswers, timeTakenSeconds } = req.body;
+
+      if (!userId || !topic || !difficulty || totalQuestions === undefined || correctAnswers === undefined) {
+        return res.status(400).json({
+          error: "Missing required fields: userId, topic, difficulty, totalQuestions, correctAnswers",
+        });
+      }
+
+      const scorePercentage = calculateScorePercentage(correctAnswers, totalQuestions);
+
+      console.log(`📊 Saving quiz result for ${userId}: ${correctAnswers}/${totalQuestions} (${scorePercentage}%)`);
+
+      const result = await saveQuizResult({
+        user_id: userId,
+        topic,
+        difficulty,
+        total_questions: totalQuestions,
+        correct_answers: correctAnswers,
+        score_percentage: scorePercentage,
+        time_taken_seconds: timeTakenSeconds,
+      });
+
+      // Get updated stats to return
+      const stats = await getUserStats(userId);
+
+      res.json({
+        success: true,
+        result,
+        stats, // Updated stats after this quiz
+      });
+    } catch (error) {
+      console.error("Error saving quiz result:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({
+        error: "Failed to save quiz result",
+        message: errorMessage,
+      });
+    }
+  }
+);
+
+/**
+ * Get user stats
+ */
+app.get("/api/user/stats/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
+    const stats = await getUserStats(userId);
+
+    res.json({
+      success: true,
+      stats,
+    });
+  } catch (error) {
+    console.error("Error fetching user stats:", error);
+    res.status(500).json({ error: "Failed to fetch user stats" });
+  }
+});
+
+/**
+ * Get user profile data (stats + recent quizzes)
+ */
+app.get("/api/user/profile/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
+    const profileData = await getProfileData(userId);
+
+    res.json({
+      success: true,
+      ...profileData,
+    });
+  } catch (error) {
+    console.error("Error fetching profile data:", error);
+    res.status(500).json({ error: "Failed to fetch profile data" });
+  }
+});
+
+/**
+ * Get recent quizzes for a user
+ */
+app.get("/api/user/recent-quizzes/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const limit = parseInt(req.query.limit as string) || 5;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
+    const recentQuizzes = await getRecentQuizzes(userId, limit);
+
+    res.json({
+      success: true,
+      recentQuizzes,
+    });
+  } catch (error) {
+    console.error("Error fetching recent quizzes:", error);
+    res.status(500).json({ error: "Failed to fetch recent quizzes" });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RAZORPAY PAYMENT ROUTES (Pro tier only)
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// Payment flow:
+// - Free tier: No payment required, handled client-side
+// - Pro tier: Uses these routes for Razorpay checkout
+// - Enterprise tier: No payment, "Contact Us" handled client-side
+//
+
+// Get Razorpay key ID (safe to expose to frontend)
+app.get("/api/payment/key", (_req: Request, res: Response) => {
+  const keyId = getRazorpayKeyId();
+  if (!keyId) {
+    return res.status(500).json({ error: "Razorpay key not configured" });
+  }
+  res.json({ keyId });
+});
+
+// Get Pro plan details (the only paid plan)
+app.get("/api/payment/pro-plan", (_req: Request, res: Response) => {
+  res.json({ plan: PRO_PLAN });
+});
+
+// Create order for Pro subscription
+interface CreateProOrderRequest {
+  userId: string;
+  userEmail: string;
+  userName?: string;
+}
+
+app.post(
+  "/api/payment/create-order",
+  async (req: Request<{}, {}, CreateProOrderRequest>, res: Response) => {
+    try {
+      const { userId, userEmail, userName } = req.body;
+
+      if (!userId || !userEmail) {
+        return res.status(400).json({
+          error: "userId and userEmail are required",
+        });
+      }
+
+      console.log(`💳 Creating Pro order for user: ${userEmail}`);
+
+      const order = await createProOrder({
+        userId,
+        userEmail,
+        userName,
+      });
+
+      console.log(`✅ Order created: ${order.id}`);
+
+      res.json({
+        success: true,
+        order: {
+          id: order.id,
+          amount: order.amount,
+          currency: order.currency,
+          receipt: order.receipt,
+        },
+        plan: PRO_PLAN,
+        targetTier: "pro", // User will be upgraded to this tier on success
+      });
+    } catch (error) {
+      console.error("Error creating order:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({
+        error: "Failed to create order",
+        message: errorMessage,
+      });
+    }
+  }
+);
+
+// Verify payment and upgrade user to Pro
+interface VerifyProPaymentRequest {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+  userId: string;
+}
+
+app.post(
+  "/api/payment/verify",
+  async (req: Request<{}, {}, VerifyProPaymentRequest>, res: Response) => {
+    try {
+      const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        userId,
+      } = req.body;
+
+      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        return res.status(400).json({
+          error: "Missing payment verification details",
+        });
+      }
+
+      if (!userId) {
+        return res.status(400).json({
+          error: "userId is required",
+        });
+      }
+
+      console.log(`🔐 Verifying Pro payment: ${razorpay_payment_id}`);
+
+      // Verify signature
+      const isValid = verifyPayment({
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+      });
+
+      if (!isValid) {
+        console.error(
+          `❌ Invalid payment signature for: ${razorpay_payment_id}`
+        );
+        return res.status(400).json({
+          error: "Payment verification failed",
+          message: "Invalid signature",
+        });
+      }
+
+      // Fetch payment details to confirm capture
+      const payment = await fetchPayment(razorpay_payment_id);
+
+      if (payment.status !== "captured") {
+        console.error(`❌ Payment not captured: ${payment.status}`);
+        return res.status(400).json({
+          error: "Payment not captured",
+          message: `Payment status: ${payment.status}`,
+        });
+      }
+
+      console.log(`✅ Pro payment verified: ${razorpay_payment_id}`);
+
+      // ────────────────────────────────────────────────────────────────
+      // RECORD PAYMENT & UPGRADE SUBSCRIPTION
+      // ────────────────────────────────────────────────────────────────
+      try {
+        // Record payment in database
+        await recordPayment(
+          userId,
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature,
+          payment.amount as number,
+          "captured"
+        );
+        console.log(`📝 Payment recorded for user: ${userId}`);
+
+        // Upgrade user to Pro (30 days)
+        const subscription = await upgradeToPro(
+          userId,
+          razorpay_payment_id,
+          razorpay_order_id,
+          30 // 30 days subscription
+        );
+        console.log(
+          `🎉 User ${userId} upgraded to Pro until ${subscription.expires_at}`
+        );
+      } catch (dbError) {
+        // Log but don't fail - payment was successful
+        console.error(
+          "⚠️ Database update error (payment still valid):",
+          dbError
+        );
+      }
+
+      res.json({
+        success: true,
+        message: "Payment verified - upgraded to Pro!",
+        payment: {
+          id: payment.id,
+          amount: payment.amount,
+          currency: payment.currency,
+          status: payment.status,
+          method: payment.method,
+        },
+        tier: "pro", // New user tier
+        userId,
+      });
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({
+        error: "Payment verification failed",
+        message: errorMessage,
+      });
+    }
+  }
+);
+
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
-  console.log(`📝 Test endpoint: POST http://localhost:${PORT}/api/generate`);
+  console.log(`📝 Quiz endpoint: POST http://localhost:${PORT}/api/generate`);
+  console.log(
+    `👤 Status endpoint: GET http://localhost:${PORT}/api/user/status/:userId`
+  );
+  console.log(
+    `💳 Payment endpoint: POST http://localhost:${PORT}/api/payment/create-order`
+  );
 });

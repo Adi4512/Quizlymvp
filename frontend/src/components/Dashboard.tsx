@@ -1,12 +1,24 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../lib/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "../lib/supabase";
+import { supabase, UserTier } from "../lib/supabase";
 import { getRandomTopics } from "../lib/topics";
 import AuthModal from "./AuthModal";
 import LottieLoader from "./LottieLoader";
 import { SideNavbar } from "./SideNavbar";
+import { Modal, useModal } from "./ui/modal";
+
+// Usage status from backend
+interface UsageStatus {
+  tier: UserTier;
+  quizzesToday: number;
+  dailyLimit: number;
+  remaining: number;
+  canGenerate: boolean;
+  isUnlimited: boolean;
+}
 import {
   Select,
   SelectContent,
@@ -61,6 +73,13 @@ const Dashboard = () => {
   const [topicsKey, setTopicsKey] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Usage tracking state
+  const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
+
+  // Modal for notifications
+  const { modalProps, showWarning, showError } = useModal();
 
   // Mobile menu links
   const mobileMenuLinks = [
@@ -125,6 +144,39 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch usage status from backend
+  const fetchUsageStatus = useCallback(async (userId: string) => {
+    if (!userId) return;
+
+    setUsageLoading(true);
+    try {
+      const response = await axios.get(`${API_URL}/api/user/status/${userId}`);
+      if (response.data.success) {
+        setUsageStatus(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch usage status:", error);
+      // Set default free tier status on error
+      setUsageStatus({
+        tier: "free",
+        quizzesToday: 0,
+        dailyLimit: 5,
+        remaining: 5,
+        canGenerate: true,
+        isUnlimited: false,
+      });
+    } finally {
+      setUsageLoading(false);
+    }
+  }, []);
+
+  // Fetch usage status when user changes
+  useEffect(() => {
+    if (user?.id) {
+      fetchUsageStatus(user.id);
+    }
+  }, [user?.id, fetchUsageStatus]);
+
   // Cleanup progress interval on unmount
   useEffect(() => {
     return () => {
@@ -162,7 +214,23 @@ const Dashboard = () => {
 
   const handleGenerateQuiz = async () => {
     if (!searchQuery.trim()) {
-      alert("Please enter something");
+      showWarning("Enter a Topic", "Please enter a quiz topic to get started.");
+      return;
+    }
+
+    // Check if user can generate (tier limit check)
+    if (usageStatus && !usageStatus.canGenerate) {
+      showWarning(
+        "Daily Limit Reached",
+        `You've used all ${usageStatus.dailyLimit} free quizzes today.\n\nUpgrade to Pro for unlimited quizzes!`,
+        {
+          primaryAction: {
+            label: "Upgrade to Pro",
+            onClick: () => navigate("/pricing"),
+          },
+          secondaryAction: { label: "Maybe Later", onClick: () => {} },
+        }
+      );
       return;
     }
 
@@ -177,23 +245,26 @@ const Dashboard = () => {
           return 99; // Keep at 99 until API responds
         }
         // Increment by random number between 5-10
-        const randomIncrement = Math.floor(Math.random() * 2) + 2; //
+        const randomIncrement = Math.floor(Math.random() * 2) + 2;
         return Math.min(prev + randomIncrement, 99);
       });
     }, 1000); // Update every second
 
     try {
-      // Call backend API
-      const response = await axios.post(
-        "https://quizlymvp.onrender.com/api/generate",
-        {
-          prompt: searchQuery.trim(),
-          difficulty: selectedDifficulty || "Mix",
-          numberOfQuestions: numberOfQuestions || 10,
-        }
-      );
+      // Call backend API with userId for tier tracking
+      const response = await axios.post(`${API_URL}/api/generate`, {
+        prompt: searchQuery.trim(),
+        difficulty: selectedDifficulty || "Mix",
+        numberOfQuestions: numberOfQuestions || 10,
+        userId: user?.id, // Pass userId for usage tracking
+      });
 
       const data = response.data;
+
+      // Update usage status from response
+      if (data.usage) {
+        setUsageStatus(data.usage);
+      }
 
       // Clear interval and complete progress
       if (progressIntervalRef.current) {
@@ -207,7 +278,7 @@ const Dashboard = () => {
         setShowProgressBar(false);
         navigate("/quiz", { state: { response: data.response } });
       }, 500);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating quiz:", error);
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
@@ -215,7 +286,37 @@ const Dashboard = () => {
       }
       setShowProgressBar(false);
       setProgressValue(0);
-      alert("Failed to generate quiz. Please try again.");
+
+      // Handle 403 - Daily limit reached
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.upgradeRequired
+      ) {
+        const status = error.response.data.status;
+        setUsageStatus(status); // Update local state
+        showWarning(
+          "Daily Limit Reached",
+          `You've used all ${
+            status?.dailyLimit || 5
+          } free quizzes today.\n\nUpgrade to Pro for unlimited quizzes!`,
+          {
+            primaryAction: {
+              label: "Upgrade to Pro",
+              onClick: () => navigate("/pricing"),
+            },
+            secondaryAction: { label: "Maybe Later", onClick: () => {} },
+          }
+        );
+        return;
+      }
+
+      showError(
+        "Generation Failed",
+        "We couldn't generate your quiz. Please check your connection and try again.",
+        {
+          primaryAction: { label: "Try Again", onClick: () => {} },
+        }
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -409,6 +510,81 @@ const Dashboard = () => {
                 we'll handle the rest.
               </span>
             </p>
+
+            {/* Usage Status Indicator */}
+            {usageStatus && (
+              <div className="mt-4 flex flex-wrap items-center gap-3 justify-center md:justify-start">
+                {/* Tier Badge */}
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${
+                    usageStatus.tier === "pro"
+                      ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white"
+                      : usageStatus.tier === "enterprise"
+                      ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                      : "bg-white/20 text-white/80 border border-white/30"
+                  }`}
+                >
+                  {usageStatus.tier === "free"
+                    ? "Free Plan"
+                    : `${usageStatus.tier} Plan`}
+                </span>
+
+                {/* Usage Counter (only for free tier) */}
+                {!usageStatus.isUnlimited && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/20">
+                      <span className="text-white/70 text-xs">Today:</span>
+                      <span
+                        className={`text-sm font-semibold ${
+                          usageStatus.remaining <= 1
+                            ? "text-red-400"
+                            : usageStatus.remaining <= 2
+                            ? "text-yellow-400"
+                            : "text-green-400"
+                        }`}
+                      >
+                        {usageStatus.quizzesToday}/{usageStatus.dailyLimit}
+                      </span>
+                      <span className="text-white/50 text-xs">quizzes</span>
+                    </div>
+
+                    {usageStatus.remaining <= 2 &&
+                      usageStatus.remaining > 0 && (
+                        <span className="text-yellow-400 text-xs">
+                          {usageStatus.remaining} left
+                        </span>
+                      )}
+
+                    {usageStatus.remaining === 0 && (
+                      <button
+                        onClick={() => navigate("/pricing")}
+                        className="text-xs px-2 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full hover:opacity-90 transition-opacity"
+                      >
+                        Upgrade
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Unlimited badge for Pro/Enterprise */}
+                {usageStatus.isUnlimited && (
+                  <span className="text-xs text-green-400 flex items-center gap-1">
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Unlimited quizzes
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Search Bar with Difficulty Selector */}
@@ -600,6 +776,9 @@ const Dashboard = () => {
           </motion.div>
         </div>
       )}
+
+      {/* Notification Modal */}
+      <Modal {...modalProps} />
     </div>
   );
 };
