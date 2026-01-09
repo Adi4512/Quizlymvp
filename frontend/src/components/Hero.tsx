@@ -70,7 +70,7 @@ const Hero = () => {
       {/* ============================================= */}
       <div className="md:hidden relative min-h-screen w-full bg-gradient-to-br from-[#C084FC] via-[#A855F7] to-[#7E22CE] overflow-hidden font-['Outfit',sans-serif]">
         {/* Mobile Header */}
-        <div className="flex items-center justify-between px-5 pt-6 pb-4">
+        <div className="flex items-center justify-between px-5 pt-6 mt-4 pb-4">
           <div className="flex items-center gap-2">
             <img
               src="/static/quizethic-favicon.svg"
@@ -81,12 +81,6 @@ const Hero = () => {
               Quizethic AI
             </span>
           </div>
-          <button
-            onClick={openSignIn}
-            className="px-4 py-1 text-sm font-medium text-[#7E22CE] bg-white/90 rounded-full hover:bg-white transition-colors shadow-sm"
-          >
-            Log in
-          </button>
         </div>
 
         {/* Mobile Main Content */}

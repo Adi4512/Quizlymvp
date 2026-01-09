@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SideNavbar } from "./SideNavbar";
+import { AppLayout } from "./AppLayout";
 import { motion } from "framer-motion";
 import axios from "axios";
 import {
@@ -290,10 +290,19 @@ const Settings = () => {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
 
+  // Create user object for AppLayout
+  const userForLayout = userId
+    ? {
+        id: userId,
+        email: userEmail,
+        user_metadata: { full_name: userName },
+      }
+    : null;
+
   return (
-    <div className="h-screen w-screen flex overflow-hidden">
+    <AppLayout user={userForLayout}>
       {/* Video Background - Fixed to cover entire viewport */}
-      <div className="fixed inset-0 w-full h-full">
+      <div className="fixed inset-0 w-full h-full" style={{ zIndex: -1 }}>
         <video
           autoPlay
           loop
@@ -307,15 +316,13 @@ const Settings = () => {
       </div>
 
       {/* Overlay - Fixed to cover entire viewport */}
-      <div className="fixed inset-0 bg-black/50"></div>
-
-      {/* Sidebar - Full height */}
-      <div className="relative z-10 h-full">
-        <SideNavbar />
-      </div>
+      <div className="fixed inset-0 bg-black/50" style={{ zIndex: 0 }}></div>
 
       {/* Main Content */}
-      <main className="flex-1 relative z-10 overflow-y-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 h-full">
+      <main
+        className="relative h-full overflow-y-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8"
+        style={{ zIndex: 1 }}
+      >
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
           <motion.div
@@ -650,7 +657,7 @@ const Settings = () => {
 
       {/* Modal */}
       <Modal {...modalProps} />
-    </div>
+    </AppLayout>
   );
 };
 

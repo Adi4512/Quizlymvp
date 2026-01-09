@@ -32,6 +32,15 @@ import {
   getProfileData,
   calculateScorePercentage,
 } from "./services/statsService.js";
+import {
+  getUserProfile,
+  updateUserProfile,
+  getProfileWithStats,
+  updateLastActive,
+  completeOnboarding,
+  addUtmTracking,
+  type UpdateProfileData,
+} from "./services/userProfileService.js";
 
 // Dodo Payments + Webhook + Supabase (for subscription updates)
 import { dodo } from "./services/dodoClient.js";
@@ -512,6 +521,172 @@ app.get(
 );
 
 // ═══════════════════════════════════════════════════════════════════════════
+// USER PROFILE ROUTES
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get user profile (full profile data from user_profiles table)
+ */
+app.get(
+  "/api/user/full-profile/:userId",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const includeStats = req.query.includeStats === "true";
+
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const profile = includeStats
+        ? await getProfileWithStats(userId)
+        : await getUserProfile(userId);
+
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+
+      // Update last active timestamp
+      await updateLastActive(userId);
+
+      res.json({
+        success: true,
+        profile,
+      });
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      res.status(500).json({ error: "Failed to fetch user profile" });
+    }
+  }
+);
+
+/**
+ * Update user profile
+ */
+interface UpdateProfileRequest {
+  userId: string;
+  updates: UpdateProfileData;
+}
+
+app.put(
+  "/api/user/profile",
+  async (req: Request<{}, {}, UpdateProfileRequest>, res: Response) => {
+    try {
+      const { userId, updates } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      if (!updates || Object.keys(updates).length === 0) {
+        return res.status(400).json({ error: "No updates provided" });
+      }
+
+      // Sanitize updates - only allow specific fields
+      const allowedFields: (keyof UpdateProfileData)[] = [
+        "full_name",
+        "avatar_url",
+        "country",
+        "country_code",
+        "timezone",
+        "language",
+        "phone",
+        "email_notifications",
+        "marketing_emails",
+        "product_updates",
+        "onboarding_completed",
+        "metadata",
+      ];
+
+      const sanitizedUpdates: UpdateProfileData = {};
+      for (const key of allowedFields) {
+        if (updates[key] !== undefined) {
+          (sanitizedUpdates as any)[key] = updates[key];
+        }
+      }
+
+      const profile = await updateUserProfile(userId, sanitizedUpdates);
+
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+
+      res.json({
+        success: true,
+        profile,
+      });
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "Failed to update user profile" });
+    }
+  }
+);
+
+/**
+ * Mark onboarding as completed
+ */
+app.post(
+  "/api/user/onboarding-complete",
+  async (req: Request<{}, {}, { userId: string }>, res: Response) => {
+    try {
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const profile = await completeOnboarding(userId);
+
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+
+      res.json({
+        success: true,
+        profile,
+      });
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      res.status(500).json({ error: "Failed to complete onboarding" });
+    }
+  }
+);
+
+/**
+ * Track UTM parameters (marketing attribution)
+ */
+interface UtmTrackingRequest {
+  userId: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+}
+
+app.post(
+  "/api/user/track-utm",
+  async (req: Request<{}, {}, UtmTrackingRequest>, res: Response) => {
+    try {
+      const { userId, utm_source, utm_medium, utm_campaign } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      await addUtmTracking(userId, {
+        source: utm_source,
+        medium: utm_medium,
+        campaign: utm_campaign,
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error tracking UTM:", error);
+      res.status(500).json({ error: "Failed to track UTM" });
+    }
+  }
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
 // RAZORPAY PAYMENT ROUTES (Pro tier only)
 // ═══════════════════════════════════════════════════════════════════════════
 //
@@ -940,6 +1115,7 @@ app.delete(
         "daily_usage",
         "user_subscriptions",
         "user_stats",
+        "user_profiles",
       ];
 
       for (const table of tablesToDelete) {

@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SideNavbar } from "./SideNavbar";
+import { AppLayout } from "./AppLayout";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { supabase, getTierFromUser, UserTier } from "../lib/supabase";
@@ -164,9 +164,9 @@ const Profile = () => {
     user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   return (
-    <div className="h-screen flex">
+    <AppLayout user={user}>
       {/* Video Background */}
-      <div className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
+      <div className="fixed inset-0 w-full h-full" style={{ zIndex: -1 }}>
         <video
           autoPlay
           loop
@@ -180,16 +180,11 @@ const Profile = () => {
       </div>
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" style={{ zIndex: 0 }}></div>
-
-      {/* Sidebar */}
-      <div className="relative hidden md:block" style={{ zIndex: 1 }}>
-        <SideNavbar />
-      </div>
+      <div className="fixed inset-0 bg-black/50" style={{ zIndex: 0 }}></div>
 
       {/* Main Content */}
       <main
-        className="flex-1 relative overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
+        className="relative h-full overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
         style={{ zIndex: 1 }}
       >
         <div className="max-w-6xl mx-auto space-y-3">
@@ -568,7 +563,7 @@ const Profile = () => {
           </div>
         </div>
       </main>
-    </div>
+    </AppLayout>
   );
 };
 

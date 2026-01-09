@@ -36,6 +36,9 @@ import {
   IconArrowLeft,
   IconMenu2,
   IconX,
+  IconCreditCard,
+  IconInfoCircle,
+  IconMail,
 } from "@tabler/icons-react";
 
 import QuoteBox from "./QuoteBox";
@@ -66,7 +69,7 @@ const Dashboard = () => {
   const [showProgressBar, setShowProgressBar] = useState(false);
   const [progressValue, setProgressValue] = useState(0);
   const [loadingStep, setLoadingStep] = useState(0);
-  const [numberOfQuestions, setNumberOfQuestions] = useState(5);
+  const [numberOfQuestions, setNumberOfQuestions] = useState(10);
   const [popularTopics, setPopularTopics] = useState<string[]>(
     getRandomTopics(5)
   );
@@ -87,6 +90,9 @@ const Dashboard = () => {
     { label: "Dashboard", icon: IconDashboard, path: "/dashboard" },
     { label: "Profile", icon: IconUserBolt, path: "/profile" },
     { label: "Settings", icon: IconSettings, path: "/settings" },
+    { label: "Pricing", icon: IconCreditCard, path: "/pricing" },
+    { label: "About Us", icon: IconInfoCircle, path: "/about" },
+    { label: "Contact Us", icon: IconMail, path: "/contactus" },
   ];
 
   const handleMobileLogout = async () => {
@@ -176,6 +182,14 @@ const Dashboard = () => {
       fetchUsageStatus(user.id);
     }
   }, [user?.id, fetchUsageStatus]);
+
+  // Enforce free tier restrictions: Medium difficulty, 10 questions
+  useEffect(() => {
+    if (usageStatus && usageStatus.tier === "free") {
+      setSelectedDifficulty("Medium");
+      setNumberOfQuestions(10);
+    }
+  }, [usageStatus?.tier]);
 
   // Cleanup progress interval on unmount
   useEffect(() => {
@@ -644,9 +658,26 @@ const Dashboard = () => {
                       value as "Easy" | "Medium" | "Hard" | "Mix"
                     )
                   }
+                  disabled={usageStatus?.tier === "free"}
                 >
                   <SelectTrigger className="flex-1 sm:flex-none sm:w-[180px]">
                     <SelectValue placeholder="Choose a level" />
+                    {usageStatus?.tier === "free" && (
+                      <span className="ml-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                        <svg
+                          className="w-2 h-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        PRO
+                      </span>
+                    )}
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Easy">Easy</SelectItem>
@@ -658,19 +689,36 @@ const Dashboard = () => {
 
                 {/* Number of Questions Selector */}
                 <Select
-                  value={numberOfQuestions.toString() || "5"}
+                  value={numberOfQuestions.toString()}
                   onValueChange={(value) =>
                     setNumberOfQuestions(parseInt(value))
                   }
+                  disabled={usageStatus?.tier === "free"}
                 >
                   <SelectTrigger className="flex-1 sm:flex-none sm:w-[180px]">
                     <SelectValue placeholder="Questions" />
+                    {usageStatus?.tier === "free" && (
+                      <span className="ml-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                        <svg
+                          className="w-2 h-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        PRO
+                      </span>
+                    )}
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="5">5</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="15">15</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="5">5 Questions</SelectItem>
+                    <SelectItem value="10">10 Questions</SelectItem>
+                    <SelectItem value="15">15 Questions</SelectItem>
+                    <SelectItem value="20">20 Questions</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

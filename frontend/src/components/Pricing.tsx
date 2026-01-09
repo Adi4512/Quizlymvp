@@ -10,10 +10,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 import { API_URL } from "../lib/api";
 import Navbar from "./Navbar";
 import { supabase, getTierFromUser, UserTier } from "../lib/supabase";
 import { Modal, useModal } from "./ui/modal";
+import {
+  IconHome,
+  IconDashboard,
+  IconUserBolt,
+  IconSettings,
+  IconMenu2,
+  IconX,
+  IconCreditCard,
+  IconInfoCircle,
+  IconMail,
+} from "@tabler/icons-react";
 
 // COMMENTED OUT: Razorpay - implementing different payment method
 // Declare Razorpay on window object
@@ -133,9 +145,21 @@ const Pricing = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Modal for notifications
   const { modalProps, showSuccess, showError, showWarning } = useModal();
+
+  // Mobile menu links
+  const mobileMenuLinks = [
+    { label: "Home", icon: IconHome, path: "/" },
+    { label: "Dashboard", icon: IconDashboard, path: "/dashboard" },
+    { label: "Profile", icon: IconUserBolt, path: "/profile" },
+    { label: "Settings", icon: IconSettings, path: "/settings" },
+    { label: "Pricing", icon: IconCreditCard, path: "/pricing" },
+    { label: "About Us", icon: IconInfoCircle, path: "/about" },
+    { label: "Contact Us", icon: IconMail, path: "/contactus" },
+  ];
 
   // Scroll to top on mount & load user data
   useEffect(() => {
@@ -306,6 +330,12 @@ const Pricing = () => {
       {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between px-5 pt-6 pb-4 relative z-10">
         <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl border border-white/20 transition-colors"
+        >
+          <IconMenu2 className="text-white h-5 w-5" />
+        </button>
+        <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2"
         >
@@ -318,21 +348,68 @@ const Pricing = () => {
             Quizethic AI
           </span>
         </button>
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 text-white/80 hover:text-white transition-colors"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <path d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <div className="w-10" /> {/* Spacer for centering */}
       </header>
+
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden fixed inset-0 bg-black/70 z-[70]"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="md:hidden fixed left-0 top-0 h-full w-[280px] bg-[#0f0f1a] z-[80] flex flex-col border-r border-white/10 shadow-2xl"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <img
+                    src="/static/quizethic-favicon.svg"
+                    className="h-6 w-6"
+                    alt="Logo"
+                  />
+                  <span className="text-white font-semibold">Quizethic AI</span>
+                </div>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <IconX className="text-white h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Menu Links */}
+              <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                {mobileMenuLinks.map((link) => (
+                  <button
+                    key={link.label}
+                    onClick={() => {
+                      navigate(link.path);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-xl transition-colors"
+                  >
+                    <link.icon className="h-5 w-5" />
+                    <span>{link.label}</span>
+                  </button>
+                ))}
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-12 pt-8 sm:pt-12 md:pt-16">
