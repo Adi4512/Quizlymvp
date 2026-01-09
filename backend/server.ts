@@ -755,7 +755,7 @@ app.post(
       const sub = await dodo.subscriptions.create({
         billing: { country: (country || "IN") as any },
         customer: { email, name },
-        product_id: "pdt_0NVvkSZswOoy9TwsPi7fq",
+        product_id: "pdt_0NVu3Ox3QqNhrllVCU4vN",
         quantity: 1,
         allowed_payment_method_types: [
           "credit",
