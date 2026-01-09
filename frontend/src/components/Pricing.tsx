@@ -12,12 +12,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../lib/api";
 import Navbar from "./Navbar";
-import {
-  supabase,
-  updateUserTier,
-  getTierFromUser,
-  UserTier,
-} from "../lib/supabase";
+import { supabase, getTierFromUser, UserTier } from "../lib/supabase";
 import { Modal, useModal } from "./ui/modal";
 
 // COMMENTED OUT: Razorpay - implementing different payment method
