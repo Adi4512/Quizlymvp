@@ -20,12 +20,13 @@ import {
 } from "../lib/supabase";
 import { Modal, useModal } from "./ui/modal";
 
+// COMMENTED OUT: Razorpay - implementing different payment method
 // Declare Razorpay on window object
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
+// declare global {
+//   interface Window {
+//     Razorpay: any;
+//   }
+// }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PRICING CONFIGURATION
@@ -189,11 +190,12 @@ const Pricing = () => {
   };
 
   /**
+   * COMMENTED OUT: Razorpay - implementing different payment method
    * Handle Pro tier checkout via Razorpay
    * This is the ONLY payment flow in the system
    */
   const handleProCheckout = async () => {
-    // Guard: User must be logged in
+    // Guard: user must be logged in
     if (!userId || !userEmail) {
       showWarning("Sign In Required", "Please sign in to upgrade to Pro.", {
         primaryAction: { label: "Sign In", onClick: () => navigate("/") },
@@ -201,7 +203,7 @@ const Pricing = () => {
       return;
     }
 
-    // Guard: Already Pro or Enterprise - no need to pay again
+    // Guard: Already Pro or Enterprise
     if (currentUserTier === "pro" || currentUserTier === "enterprise") {
       showSuccess(
         "Already Subscribed",
@@ -219,139 +221,24 @@ const Pricing = () => {
     setIsProcessing(true);
 
     try {
-      // Step 1: Get Razorpay key from backend
-      const keyResponse = await axios.get(`${API_URL}/api/payment/key`);
-      const { keyId } = keyResponse.data;
-
-      if (!keyId) {
-        throw new Error("Razorpay key not available");
-      }
-
-      // Step 2: Create order on backend (Pro plan only)
-      const orderResponse = await axios.post(
-        `${API_URL}/api/payment/create-order`,
-        {
-          userId,
-          userEmail,
-          userName,
-        }
-      );
-
-      const { order, plan } = orderResponse.data;
-
-      // Step 3: Initialize Razorpay checkout
-      const options = {
-        key: keyId,
-        amount: order.amount,
-        currency: order.currency,
-        name: "Quizethic AI",
-        description: `${plan.name} Subscription`,
-        image: "/static/quizethic-favicon.svg",
-        order_id: order.id,
-        handler: async function (response: {
-          razorpay_payment_id: string;
-          razorpay_order_id: string;
-          razorpay_signature: string;
-        }) {
-          try {
-            // Step 4: Verify payment on backend
-            const verifyResponse = await axios.post(
-              `${API_URL}/api/payment/verify`,
-              {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                userId,
-              }
-            );
-
-            if (verifyResponse.data.success) {
-              // Step 5: Update user tier in Supabase metadata
-              const tierUpdate = await updateUserTier("pro");
-              setIsProcessing(false);
-
-              if (tierUpdate.success) {
-                setCurrentUserTier("pro");
-                showSuccess(
-                  "Welcome to Pro! 🎉",
-                  "Your account has been upgraded successfully.\n\nEnjoy unlimited quizzes and premium features!",
-                  {
-                    primaryAction: {
-                      label: "Start Learning",
-                      onClick: () => navigate("/dashboard"),
-                    },
-                  }
-                );
-              } else {
-                // Payment succeeded but tier update failed - user should contact support
-                console.error("Tier update failed:", tierUpdate.error);
-                showSuccess(
-                  "Payment Successful!",
-                  "Your payment was processed. If Pro features aren't available, please contact support.",
-                  {
-                    primaryAction: {
-                      label: "Go to Dashboard",
-                      onClick: () => navigate("/dashboard"),
-                    },
-                  }
-                );
-              }
-            } else {
-              throw new Error("Payment verification failed");
-            }
-          } catch (error) {
-            console.error("Payment verification error:", error);
-            setIsProcessing(false);
-            showError(
-              "Verification Failed",
-              "We couldn't verify your payment. Please contact support if amount was deducted.",
-              {
-                primaryAction: {
-                  label: "Contact Support",
-                  onClick: () =>
-                    (window.location.href = `mailto:${PRICING_CONFIG.SALES_EMAIL}`),
-                },
-              }
-            );
-          }
-        },
-        prefill: {
-          name: userName,
-          email: userEmail,
-        },
-        notes: {
-          userId,
-          tier: "pro",
-        },
-        theme: {
-          color: "#EC4899", // Pink to match Pro theme
-        },
-        modal: {
-          ondismiss: function () {
-            setIsProcessing(false);
-          },
-        },
-      };
-
-      const razorpay = new window.Razorpay(options);
-
-      razorpay.on("payment.failed", function (response: any) {
-        console.error("Payment failed:", response.error);
-        setIsProcessing(false);
-        showError(
-          "Payment Failed",
-          response.error?.description ||
-            "Your payment could not be processed. Please try again."
-        );
+      const resp = await axios.post(`${API_URL}/api/billing/subscribe`, {
+        userId,
+        email: userEmail,
+        name: userName || "User",
+        country: "IN",
       });
 
-      razorpay.open();
-    } catch (error) {
-      console.error("Payment initiation error:", error);
+      const paymentLink = resp?.data?.paymentLink;
+      if (!paymentLink) throw new Error("No paymentLink in response");
+
+      window.location.href = paymentLink;
+    } catch (err: any) {
+      console.error("Checkout error:", err?.response?.data || err);
+      console.log("API_URL", API_URL);
       setIsProcessing(false);
       showError(
-        "Connection Error",
-        "Failed to connect to payment gateway. Please check your internet connection and try again."
+        "Checkout Failed",
+        "Unable to start checkout. Please try again."
       );
     }
   };
@@ -630,8 +517,8 @@ const Pricing = () => {
                   What payment methods do you accept?
                 </h3>
                 <p className="text-white/80 text-sm leading-relaxed">
-                  We accept all major credit/debit cards, UPI, and net banking
-                  via Razorpay.
+                  We accept all major credit/debit cards, UPI, and net banking.
+                  Payment system coming soon!
                 </p>
               </div>
               <div className="bg-white/15 backdrop-blur-lg rounded-xl p-6 shadow-lg border border-white/20">

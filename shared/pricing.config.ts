@@ -3,8 +3,10 @@
  * ================================
  * B2B-first SaaS pricing with 3 tiers:
  * - Free: Trial & lead funnel (no payment)
- * - Pro: Self-serve paid plan (Razorpay checkout)
+ * - Pro: Self-serve paid plan (Payment method being upgraded)
  * - Enterprise: Contact sales (no payment, manual onboarding)
+ * 
+ * NOTE: Razorpay has been commented out. New payment method to be implemented.
  */
 
 // User tier values - used for database/auth metadata

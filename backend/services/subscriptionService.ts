@@ -21,8 +21,13 @@ export interface UserSubscription {
   status: SubscriptionStatus;
   started_at: string;
   expires_at: string | null;
-  razorpay_payment_id: string | null;
-  razorpay_order_id: string | null;
+  // Dodo Payments fields
+  dodo_subscription_id: string | null;
+  dodo_customer_id: string | null;
+  dodo_payment_id: string | null;
+  // Legacy Razorpay fields (for historical data)
+  razorpay_payment_id?: string | null;
+  razorpay_order_id?: string | null;
 }
 
 export interface DailyUsage {
@@ -94,7 +99,9 @@ const getSupabaseAdmin = (): SupabaseClient => {
  * Get or create subscription for a user
  * New users automatically get a "free" tier
  */
-export const getSubscription = async (userId: string): Promise<UserSubscription> => {
+export const getSubscription = async (
+  userId: string
+): Promise<UserSubscription> => {
   const supabase = getSupabaseAdmin();
 
   // Try to get existing subscription
@@ -143,8 +150,9 @@ export const getSubscription = async (userId: string): Promise<UserSubscription>
       status: "active",
       started_at: new Date().toISOString(),
       expires_at: null,
-      razorpay_payment_id: null,
-      razorpay_order_id: null,
+      dodo_subscription_id: null,
+      dodo_customer_id: null,
+      dodo_payment_id: null,
     };
   }
 
@@ -160,18 +168,16 @@ export const getUserTier = async (userId: string): Promise<UserTier> => {
 };
 
 /**
- * Upgrade user to Pro tier
+ * Upgrade user to Pro tier via Dodo Payments
  */
 export const upgradeToPro = async (
   userId: string,
-  razorpayPaymentId: string,
-  razorpayOrderId: string,
-  durationDays: number = 30
+  dodoSubscriptionId: string,
+  dodoCustomerId?: string,
+  dodoPaymentId?: string,
+  expiresAt?: string | null
 ): Promise<UserSubscription> => {
   const supabase = getSupabaseAdmin();
-
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + durationDays);
 
   const { data, error } = await supabase
     .from("user_subscriptions")
@@ -180,9 +186,10 @@ export const upgradeToPro = async (
         user_id: userId,
         tier: "pro",
         status: "active",
-        expires_at: expiresAt.toISOString(),
-        razorpay_payment_id: razorpayPaymentId,
-        razorpay_order_id: razorpayOrderId,
+        expires_at: expiresAt || null,
+        dodo_subscription_id: dodoSubscriptionId,
+        dodo_customer_id: dodoCustomerId || null,
+        dodo_payment_id: dodoPaymentId || null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "user_id" }
@@ -272,7 +279,9 @@ export const getUsageStatus = async (userId: string): Promise<UsageStatus> => {
   const limits = TIER_LIMITS[tier];
   const dailyLimit = limits.dailyQuizzes;
   const isUnlimited = limits.isUnlimited;
-  const remaining = isUnlimited ? Infinity : Math.max(0, dailyLimit - todayUsage);
+  const remaining = isUnlimited
+    ? Infinity
+    : Math.max(0, dailyLimit - todayUsage);
   const canGenerate = isUnlimited || remaining > 0;
 
   return {
@@ -306,28 +315,28 @@ export const canGenerateQuiz = async (
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PAYMENT RECORDING
+// PAYMENT RECORDING - Dodo Payments
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Record a payment in the payments table
+ * Record a Dodo payment in the payments table
  */
 export const recordPayment = async (
   userId: string,
-  razorpayOrderId: string,
-  razorpayPaymentId: string,
-  razorpaySignature: string,
+  dodoPaymentId: string,
+  dodoSubscriptionId: string,
   amount: number,
-  status: "pending" | "captured" | "failed" | "refunded" = "captured"
+  currency: string = "INR",
+  status: "pending" | "succeeded" | "failed" | "refunded" = "succeeded"
 ): Promise<void> => {
   const supabase = getSupabaseAdmin();
 
   const { error } = await supabase.from("payments").insert({
     user_id: userId,
-    razorpay_order_id: razorpayOrderId,
-    razorpay_payment_id: razorpayPaymentId,
-    razorpay_signature: razorpaySignature,
+    dodo_payment_id: dodoPaymentId,
+    dodo_subscription_id: dodoSubscriptionId,
     amount,
+    currency,
     status,
     plan_id: "pro",
   });
@@ -353,4 +362,3 @@ export default {
   recordPayment,
   TIER_LIMITS,
 };
-

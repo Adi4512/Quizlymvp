@@ -1,6 +1,8 @@
 /**
  * Razorpay Payment Service
  * ========================
+ * COMMENTED OUT: Implementing different payment method
+ * 
  * Handles payment processing for Pro tier ONLY.
  *
  * Payment Flow:
@@ -9,8 +11,10 @@
  * - Enterprise tier: No payment, contact sales
  */
 
-import Razorpay from "razorpay";
-import crypto from "crypto";
+// COMMENTED OUT: All Razorpay functionality - implementing different payment method
+
+// import Razorpay from "razorpay";
+// import crypto from "crypto";
 
 // Import shared pricing config
 // Note: In a monorepo, you'd use proper path aliases. Here we duplicate the essential config.
@@ -49,32 +53,32 @@ export const PLANS = {
 export type PlanType = keyof typeof PLANS;
 
 // ═══════════════════════════════════════════════════════════════════════════
-// RAZORPAY INSTANCE (Lazy initialization)
+// RAZORPAY INSTANCE (Lazy initialization) - COMMENTED OUT
 // ═══════════════════════════════════════════════════════════════════════════
 
-let razorpayInstance: Razorpay | null = null;
+// let razorpayInstance: Razorpay | null = null;
 
-const getRazorpayInstance = (): Razorpay => {
-  if (!razorpayInstance) {
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+// const getRazorpayInstance = (): Razorpay => {
+//   if (!razorpayInstance) {
+//     const keyId = process.env.RAZORPAY_KEY_ID;
+//     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-    if (!keyId || !keySecret) {
-      throw new Error(
-        "Razorpay API keys not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env"
-      );
-    }
+//     if (!keyId || !keySecret) {
+//       throw new Error(
+//         "Razorpay API keys not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env"
+//       );
+//     }
 
-    razorpayInstance = new Razorpay({
-      key_id: keyId,
-      key_secret: keySecret,
-    });
-  }
-  return razorpayInstance;
-};
+//     razorpayInstance = new Razorpay({
+//       key_id: keyId,
+//       key_secret: keySecret,
+//     });
+//   }
+//   return razorpayInstance;
+// };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ORDER CREATION (Pro tier only)
+// ORDER CREATION (Pro tier only) - COMMENTED OUT
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface CreateOrderOptions {
@@ -96,47 +100,50 @@ interface RazorpayOrder {
 }
 
 /**
- * Create a Razorpay order for Pro subscription
+ * COMMENTED OUT: Create a Razorpay order for Pro subscription
  * This is the ONLY payment flow in the system.
  */
 export const createProOrder = async (
   options: CreateOrderOptions
 ): Promise<RazorpayOrder> => {
-  const { userId, userEmail } = options;
+  // COMMENTED OUT: Razorpay order creation
+  throw new Error("Payment system is being upgraded. Please try again later.");
+  
+  // const { userId, userEmail } = options;
 
-  // Receipt max 40 chars - use shortened format
-  const shortId = userId.slice(0, 8); // First 8 chars of UUID
-  const timestamp = Date.now().toString(36); // Base36 timestamp (shorter)
-  const receipt = `pro_${shortId}_${timestamp}`;
+  // // Receipt max 40 chars - use shortened format
+  // const shortId = userId.slice(0, 8); // First 8 chars of UUID
+  // const timestamp = Date.now().toString(36); // Base36 timestamp (shorter)
+  // const receipt = `pro_${shortId}_${timestamp}`;
 
-  try {
-    const razorpay = getRazorpayInstance();
-    const order = await razorpay.orders.create({
-      amount: PRO_PLAN.priceInPaise,
-      currency: PRO_PLAN.currency,
-      receipt: receipt,
-      notes: {
-        planId: PRO_PLAN.id,
-        userId: userId,
-        userEmail: userEmail,
-        planName: PRO_PLAN.name,
-        tier: "pro", // Target tier after successful payment
-      },
-    });
+  // try {
+  //   const razorpay = getRazorpayInstance();
+  //   const order = await razorpay.orders.create({
+  //     amount: PRO_PLAN.priceInPaise,
+  //     currency: PRO_PLAN.currency,
+  //     receipt: receipt,
+  //     notes: {
+  //       planId: PRO_PLAN.id,
+  //       userId: userId,
+  //       userEmail: userEmail,
+  //       planName: PRO_PLAN.name,
+  //       tier: "pro", // Target tier after successful payment
+  //     },
+  //   });
 
-    return order as RazorpayOrder;
-  } catch (error: any) {
-    // Log full error for debugging
-    console.error("Razorpay order creation error:", error);
+  //   return order as RazorpayOrder;
+  // } catch (error: any) {
+  //   // Log full error for debugging
+  //   console.error("Razorpay order creation error:", error);
 
-    // Razorpay SDK returns error in error.error format
-    const errorMessage =
-      error?.error?.description ||
-      error?.message ||
-      JSON.stringify(error) ||
-      "Unknown error";
-    throw new Error(`Failed to create Razorpay order: ${errorMessage}`);
-  }
+  //   // Razorpay SDK returns error in error.error format
+  //   const errorMessage =
+  //     error?.error?.description ||
+  //     error?.message ||
+  //     JSON.stringify(error) ||
+  //     "Unknown error";
+  //   throw new Error(`Failed to create Razorpay order: ${errorMessage}`);
+  // }
 };
 
 // Legacy function for backward compatibility
@@ -148,7 +155,7 @@ export const createOrder = async (
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PAYMENT VERIFICATION
+// PAYMENT VERIFICATION - COMMENTED OUT
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface VerifyPaymentOptions {
@@ -158,69 +165,80 @@ interface VerifyPaymentOptions {
 }
 
 /**
- * Verify Razorpay payment signature
+ * COMMENTED OUT: Verify Razorpay payment signature
  * Returns true if signature is valid
  */
 export const verifyPayment = (options: VerifyPaymentOptions): boolean => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    options;
+  // COMMENTED OUT: Razorpay payment verification
+  throw new Error("Payment system is being upgraded. Please try again later.");
+  
+  // const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+  //   options;
 
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  // const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-  if (!keySecret) {
-    throw new Error("Razorpay key secret not configured");
-  }
+  // if (!keySecret) {
+  //   throw new Error("Razorpay key secret not configured");
+  // }
 
-  // Create expected signature: HMAC SHA256 of order_id|payment_id
-  const body = razorpay_order_id + "|" + razorpay_payment_id;
-  const expectedSignature = crypto
-    .createHmac("sha256", keySecret)
-    .update(body)
-    .digest("hex");
+  // // Create expected signature: HMAC SHA256 of order_id|payment_id
+  // const body = razorpay_order_id + "|" + razorpay_payment_id;
+  // const expectedSignature = crypto
+  //   .createHmac("sha256", keySecret)
+  //   .update(body)
+  //   .digest("hex");
 
-  return expectedSignature === razorpay_signature;
+  // return expectedSignature === razorpay_signature;
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PAYMENT & ORDER FETCHING
+// PAYMENT & ORDER FETCHING - COMMENTED OUT
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Fetch payment details by payment ID
+ * COMMENTED OUT: Fetch payment details by payment ID
  */
 export const fetchPayment = async (paymentId: string) => {
-  try {
-    const razorpay = getRazorpayInstance();
-    const payment = await razorpay.payments.fetch(paymentId);
-    return payment;
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    throw new Error(`Failed to fetch payment: ${errorMessage}`);
-  }
+  // COMMENTED OUT: Razorpay payment fetching
+  throw new Error("Payment system is being upgraded. Please try again later.");
+  
+  // try {
+  //   const razorpay = getRazorpayInstance();
+  //   const payment = await razorpay.payments.fetch(paymentId);
+  //   return payment;
+  // } catch (error) {
+  //   const errorMessage =
+  //     error instanceof Error ? error.message : "Unknown error";
+  //   throw new Error(`Failed to fetch payment: ${errorMessage}`);
+  // }
 };
 
 /**
- * Fetch order details by order ID
+ * COMMENTED OUT: Fetch order details by order ID
  */
 export const fetchOrder = async (orderId: string) => {
-  try {
-    const razorpay = getRazorpayInstance();
-    const order = await razorpay.orders.fetch(orderId);
-    return order;
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    throw new Error(`Failed to fetch order: ${errorMessage}`);
-  }
+  // COMMENTED OUT: Razorpay order fetching
+  throw new Error("Payment system is being upgraded. Please try again later.");
+  
+  // try {
+  //   const razorpay = getRazorpayInstance();
+  //   const order = await razorpay.orders.fetch(orderId);
+  //   return order;
+  // } catch (error) {
+  //   const errorMessage =
+  //     error instanceof Error ? error.message : "Unknown error";
+  //   throw new Error(`Failed to fetch order: ${errorMessage}`);
+  // }
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PUBLIC KEY (safe to expose to frontend)
+// PUBLIC KEY (safe to expose to frontend) - COMMENTED OUT
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const getRazorpayKeyId = (): string => {
-  return process.env.RAZORPAY_KEY_ID || "";
+  // COMMENTED OUT: Return empty string while payment is disabled
+  return "";
+  // return process.env.RAZORPAY_KEY_ID || "";
 };
 
 // ═══════════════════════════════════════════════════════════════════════════

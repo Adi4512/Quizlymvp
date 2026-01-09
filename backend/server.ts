@@ -6,19 +6,22 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { inferSyllabus } from "./services/syllabusInference.js";
 import { generateQuiz } from "./services/quizGenerator.js";
-import {
-  createProOrder,
-  verifyPayment,
-  fetchPayment,
-  getRazorpayKeyId,
-  PRO_PLAN,
-} from "./services/razorpayService.js";
+// COMMENTED OUT: Razorpay imports - implementing different payment method
+// import {
+//   createProOrder,
+//   verifyPayment,
+//   fetchPayment,
+//   getRazorpayKeyId,
+//   PRO_PLAN,
+// } from "./services/razorpayService.js";
+import { PRO_PLAN } from "./services/razorpayService.js"; // Keep PRO_PLAN for reference
 import {
   getUsageStatus,
   canGenerateQuiz,
   incrementUsage,
-  upgradeToPro,
-  recordPayment,
+  // COMMENTED OUT: Razorpay-related imports - implementing different payment method
+  // upgradeToPro,
+  // recordPayment,
   getSubscription,
   TIER_LIMITS,
 } from "./services/subscriptionService.js";
@@ -30,6 +33,10 @@ import {
   calculateScorePercentage,
 } from "./services/statsService.js";
 
+// Dodo Payments + Webhook + Supabase (for subscription updates)
+import { dodo } from "./services/dodoClient.js";
+import { Webhook } from "standardwebhooks";
+import { createClient as createSbClient } from "@supabase/supabase-js";
 // Get current directory for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,13 +45,17 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, ".env") });
 
 const app = express();
+// Use raw body for Dodo webhook verification BEFORE JSON parser
+app.use("/api/billing/webhook", express.raw({ type: "application/json" }));
 const PORT: number = parseInt(process.env.PORT || "3000", 10);
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-
-// Initialize OpenRouter SDK
+app.use((req, res, next) => {
+  // Avoid JSON parsing for webhook route to preserve raw body for signature verification
+  if (req.originalUrl === "/api/billing/webhook") return next();
+  return express.json()(req, res, next);
+}); // Initialize OpenRouter SDK
 const OPENROUTER_API_KEY: string | undefined = process.env.OPEN_ROUTER_API_KEY;
 const openRouter = new OpenRouter({
   apiKey: OPENROUTER_API_KEY || "",
@@ -366,17 +377,36 @@ app.post(
   "/api/quiz/result",
   async (req: Request<{}, {}, SaveQuizResultRequest>, res: Response) => {
     try {
-      const { userId, topic, difficulty, totalQuestions, correctAnswers, timeTakenSeconds } = req.body;
+      const {
+        userId,
+        topic,
+        difficulty,
+        totalQuestions,
+        correctAnswers,
+        timeTakenSeconds,
+      } = req.body;
 
-      if (!userId || !topic || !difficulty || totalQuestions === undefined || correctAnswers === undefined) {
+      if (
+        !userId ||
+        !topic ||
+        !difficulty ||
+        totalQuestions === undefined ||
+        correctAnswers === undefined
+      ) {
         return res.status(400).json({
-          error: "Missing required fields: userId, topic, difficulty, totalQuestions, correctAnswers",
+          error:
+            "Missing required fields: userId, topic, difficulty, totalQuestions, correctAnswers",
         });
       }
 
-      const scorePercentage = calculateScorePercentage(correctAnswers, totalQuestions);
+      const scorePercentage = calculateScorePercentage(
+        correctAnswers,
+        totalQuestions
+      );
 
-      console.log(`📊 Saving quiz result for ${userId}: ${correctAnswers}/${totalQuestions} (${scorePercentage}%)`);
+      console.log(
+        `📊 Saving quiz result for ${userId}: ${correctAnswers}/${totalQuestions} (${scorePercentage}%)`
+      );
 
       const result = await saveQuizResult({
         user_id: userId,
@@ -398,7 +428,8 @@ app.post(
       });
     } catch (error) {
       console.error("Error saving quiz result:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       res.status(500).json({
         error: "Failed to save quiz result",
         message: errorMessage,
@@ -456,30 +487,35 @@ app.get("/api/user/profile/:userId", async (req: Request, res: Response) => {
 /**
  * Get recent quizzes for a user
  */
-app.get("/api/user/recent-quizzes/:userId", async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-    const limit = parseInt(req.query.limit as string) || 5;
+app.get(
+  "/api/user/recent-quizzes/:userId",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const limit = parseInt(req.query.limit as string) || 5;
 
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" });
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const recentQuizzes = await getRecentQuizzes(userId, limit);
+
+      res.json({
+        success: true,
+        recentQuizzes,
+      });
+    } catch (error) {
+      console.error("Error fetching recent quizzes:", error);
+      res.status(500).json({ error: "Failed to fetch recent quizzes" });
     }
-
-    const recentQuizzes = await getRecentQuizzes(userId, limit);
-
-    res.json({
-      success: true,
-      recentQuizzes,
-    });
-  } catch (error) {
-    console.error("Error fetching recent quizzes:", error);
-    res.status(500).json({ error: "Failed to fetch recent quizzes" });
   }
-});
+);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // RAZORPAY PAYMENT ROUTES (Pro tier only)
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// COMMENTED OUT: Implementing different payment method
 //
 // Payment flow:
 // - Free tier: No payment required, handled client-side
@@ -487,21 +523,21 @@ app.get("/api/user/recent-quizzes/:userId", async (req: Request, res: Response) 
 // - Enterprise tier: No payment, "Contact Us" handled client-side
 //
 
-// Get Razorpay key ID (safe to expose to frontend)
+// COMMENTED OUT: Get Razorpay key ID (safe to expose to frontend)
 app.get("/api/payment/key", (_req: Request, res: Response) => {
-  const keyId = getRazorpayKeyId();
-  if (!keyId) {
-    return res.status(500).json({ error: "Razorpay key not configured" });
-  }
-  res.json({ keyId });
+  // Return error while payment system is being upgraded
+  return res.status(503).json({
+    error: "Payment system is being upgraded",
+    message: "Please check back soon!",
+  });
 });
 
-// Get Pro plan details (the only paid plan)
+// Get Pro plan details (the only paid plan) - Keep this for pricing display
 app.get("/api/payment/pro-plan", (_req: Request, res: Response) => {
   res.json({ plan: PRO_PLAN });
 });
 
-// Create order for Pro subscription
+// COMMENTED OUT: Create order for Pro subscription
 interface CreateProOrderRequest {
   userId: string;
   userEmail: string;
@@ -511,49 +547,56 @@ interface CreateProOrderRequest {
 app.post(
   "/api/payment/create-order",
   async (req: Request<{}, {}, CreateProOrderRequest>, res: Response) => {
-    try {
-      const { userId, userEmail, userName } = req.body;
+    // Return error while payment system is being upgraded
+    return res.status(503).json({
+      error: "Payment system is being upgraded",
+      message: "Please check back soon!",
+    });
 
-      if (!userId || !userEmail) {
-        return res.status(400).json({
-          error: "userId and userEmail are required",
-        });
-      }
+    // COMMENTED OUT: Razorpay order creation
+    // try {
+    //   const { userId, userEmail, userName } = req.body;
 
-      console.log(`💳 Creating Pro order for user: ${userEmail}`);
+    //   if (!userId || !userEmail) {
+    //     return res.status(400).json({
+    //       error: "userId and userEmail are required",
+    //     });
+    //   }
 
-      const order = await createProOrder({
-        userId,
-        userEmail,
-        userName,
-      });
+    //   console.log(`💳 Creating Pro order for user: ${userEmail}`);
 
-      console.log(`✅ Order created: ${order.id}`);
+    //   const order = await createProOrder({
+    //     userId,
+    //     userEmail,
+    //     userName,
+    //   });
 
-      res.json({
-        success: true,
-        order: {
-          id: order.id,
-          amount: order.amount,
-          currency: order.currency,
-          receipt: order.receipt,
-        },
-        plan: PRO_PLAN,
-        targetTier: "pro", // User will be upgraded to this tier on success
-      });
-    } catch (error) {
-      console.error("Error creating order:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      res.status(500).json({
-        error: "Failed to create order",
-        message: errorMessage,
-      });
-    }
+    //   console.log(`✅ Order created: ${order.id}`);
+
+    //   res.json({
+    //     success: true,
+    //     order: {
+    //       id: order.id,
+    //       amount: order.amount,
+    //       currency: order.currency,
+    //       receipt: order.receipt,
+    //     },
+    //     plan: PRO_PLAN,
+    //     targetTier: "pro", // User will be upgraded to this tier on success
+    //   });
+    // } catch (error) {
+    //   console.error("Error creating order:", error);
+    //   const errorMessage =
+    //     error instanceof Error ? error.message : "Unknown error";
+    //   res.status(500).json({
+    //     error: "Failed to create order",
+    //     message: errorMessage,
+    //   });
+    // }
   }
 );
 
-// Verify payment and upgrade user to Pro
+// COMMENTED OUT: Verify payment and upgrade user to Pro
 interface VerifyProPaymentRequest {
   razorpay_order_id: string;
   razorpay_payment_id: string;
@@ -564,115 +607,360 @@ interface VerifyProPaymentRequest {
 app.post(
   "/api/payment/verify",
   async (req: Request<{}, {}, VerifyProPaymentRequest>, res: Response) => {
+    // Return error while payment system is being upgraded
+    return res.status(503).json({
+      error: "Payment system is being upgraded",
+      message: "Please check back soon!",
+    });
+
+    // COMMENTED OUT: Razorpay payment verification
+    // try {
+    //   const {
+    //     razorpay_order_id,
+    //     razorpay_payment_id,
+    //     razorpay_signature,
+    //     userId,
+    //   } = req.body;
+
+    //   if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    //     return res.status(400).json({
+    //       error: "Missing payment verification details",
+    //     });
+    //   }
+
+    //   if (!userId) {
+    //     return res.status(400).json({
+    //       error: "userId is required",
+    //     });
+    //   }
+
+    //   console.log(`🔐 Verifying Pro payment: ${razorpay_payment_id}`);
+
+    //   // Verify signature
+    //   const isValid = verifyPayment({
+    //     razorpay_order_id,
+    //     razorpay_payment_id,
+    //     razorpay_signature,
+    //   });
+
+    //   if (!isValid) {
+    //     console.error(
+    //       `❌ Invalid payment signature for: ${razorpay_payment_id}`
+    //     );
+    //     return res.status(400).json({
+    //       error: "Payment verification failed",
+    //       message: "Invalid signature",
+    //     });
+    //   }
+
+    //   // Fetch payment details to confirm capture
+    //   const payment = await fetchPayment(razorpay_payment_id);
+
+    //   if (payment.status !== "captured") {
+    //     console.error(`❌ Payment not captured: ${payment.status}`);
+    //     return res.status(400).json({
+    //       error: "Payment not captured",
+    //       message: `Payment status: ${payment.status}`,
+    //     });
+    //   }
+
+    //   console.log(`✅ Pro payment verified: ${razorpay_payment_id}`);
+
+    //   // ────────────────────────────────────────────────────────────────
+    //   // RECORD PAYMENT & UPGRADE SUBSCRIPTION
+    //   // ────────────────────────────────────────────────────────────────
+    //   try {
+    //     // Record payment in database
+    //     await recordPayment(
+    //       userId,
+    //       razorpay_order_id,
+    //       razorpay_payment_id,
+    //       razorpay_signature,
+    //       payment.amount as number,
+    //       "captured"
+    //     );
+    //     console.log(`📝 Payment recorded for user: ${userId}`);
+
+    //     // Upgrade user to Pro (30 days)
+    //     const subscription = await upgradeToPro(
+    //       userId,
+    //       razorpay_payment_id,
+    //       razorpay_order_id,
+    //       30 // 30 days subscription
+    //     );
+    //     console.log(
+    //       `🎉 User ${userId} upgraded to Pro until ${subscription.expires_at}`
+    //     );
+    //   } catch (dbError) {
+    //     // Log but don't fail - payment was successful
+    //     console.error(
+    //       "⚠️ Database update error (payment still valid):",
+
+    //       dbError
+    //     );
+    //   }
+
+    //   res.json({
+    //     success: true,
+    //     message: "Payment verified - upgraded to Pro!",
+    //     payment: {
+    //       id: payment.id,
+    //       amount: payment.amount,
+    //       currency: payment.currency,
+    //       status: payment.status,
+    //       method: payment.method,
+    //     },
+    //     tier: "pro", // New user tier
+    //     userId,
+    //   });
+    // } catch (error) {
+    //   console.error("Error verifying payment:", error);
+    //   const errorMessage =
+    //     error instanceof Error ? error.message : "Unknown error";
+    //   res.status(500).json({
+    //     error: "Payment verification failed",
+    //     message: errorMessage,
+    //   });
+    // }
+  }
+);
+
+/**
+ * Create Dodo subscription and return hosted checkout link
+ * Body: { userId: string, email: string, name: string, country?: string }
+ */
+interface SubscribeRequest {
+  userId: string;
+  email: string;
+  name: string;
+  country?: string;
+}
+
+app.post(
+  "/api/billing/subscribe",
+  async (req: Request<{}, {}, SubscribeRequest>, res: Response) => {
     try {
-      const {
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature,
-        userId,
-      } = req.body;
-
-      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-        return res.status(400).json({
-          error: "Missing payment verification details",
-        });
+      const { userId, email, name, country } = req.body || {};
+      if (!userId || !email || !name) {
+        return res
+          .status(400)
+          .json({ error: "userId, email, and name are required" });
       }
 
-      if (!userId) {
-        return res.status(400).json({
-          error: "userId is required",
-        });
+      const returnUrl = `${
+        process.env.FRONTEND_URL || "http://localhost:5173"
+      }/billing/return`;
+
+      // Create subscription with hosted checkout link
+      const sub = await dodo.subscriptions.create({
+        billing: { country: (country || "IN") as any },
+        customer: { email, name },
+        product_id: "pdt_0NVu3Ox3QqNhrllVCU4vN",
+        quantity: 1,
+        allowed_payment_method_types: [
+          "credit",
+          "debit",
+          "upi_collect",
+          "upi_intent",
+        ],
+        payment_link: true,
+        return_url: returnUrl,
+        show_saved_payment_methods: true,
+        metadata: { user_id: userId },
+      } as any);
+
+      const paymentLink =
+        (sub as any)?.payment_link ||
+        (sub as any)?.payment?.payment_link ||
+        (sub as any)?.link;
+
+      if (!paymentLink) {
+        return res
+          .status(502)
+          .json({ error: "Failed to obtain payment link from Dodo" });
       }
 
-      console.log(`🔐 Verifying Pro payment: ${razorpay_payment_id}`);
-
-      // Verify signature
-      const isValid = verifyPayment({
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature,
-      });
-
-      if (!isValid) {
-        console.error(
-          `❌ Invalid payment signature for: ${razorpay_payment_id}`
-        );
-        return res.status(400).json({
-          error: "Payment verification failed",
-          message: "Invalid signature",
-        });
-      }
-
-      // Fetch payment details to confirm capture
-      const payment = await fetchPayment(razorpay_payment_id);
-
-      if (payment.status !== "captured") {
-        console.error(`❌ Payment not captured: ${payment.status}`);
-        return res.status(400).json({
-          error: "Payment not captured",
-          message: `Payment status: ${payment.status}`,
-        });
-      }
-
-      console.log(`✅ Pro payment verified: ${razorpay_payment_id}`);
-
-      // ────────────────────────────────────────────────────────────────
-      // RECORD PAYMENT & UPGRADE SUBSCRIPTION
-      // ────────────────────────────────────────────────────────────────
-      try {
-        // Record payment in database
-        await recordPayment(
-          userId,
-          razorpay_order_id,
-          razorpay_payment_id,
-          razorpay_signature,
-          payment.amount as number,
-          "captured"
-        );
-        console.log(`📝 Payment recorded for user: ${userId}`);
-
-        // Upgrade user to Pro (30 days)
-        const subscription = await upgradeToPro(
-          userId,
-          razorpay_payment_id,
-          razorpay_order_id,
-          30 // 30 days subscription
-        );
-        console.log(
-          `🎉 User ${userId} upgraded to Pro until ${subscription.expires_at}`
-        );
-      } catch (dbError) {
-        // Log but don't fail - payment was successful
-        console.error(
-          "⚠️ Database update error (payment still valid):",
-          dbError
-        );
-      }
-
-      res.json({
-        success: true,
-        message: "Payment verified - upgraded to Pro!",
-        payment: {
-          id: payment.id,
-          amount: payment.amount,
-          currency: payment.currency,
-          status: payment.status,
-          method: payment.method,
-        },
-        tier: "pro", // New user tier
-        userId,
-      });
-    } catch (error) {
-      console.error("Error verifying payment:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      res.status(500).json({
-        error: "Payment verification failed",
-        message: errorMessage,
+      return res.json({ success: true, paymentLink });
+    } catch (err: any) {
+      console.error(
+        "Dodo subscription creation error:",
+        err?.response?.data || err
+      );
+      return res.status(500).json({
+        error: "Failed to create subscription",
+        details: err?.response?.data || err?.message || "unknown",
       });
     }
   }
 );
+
+/**
+ * Helper: Update user subscription tier in Supabase with Dodo payment details
+ */
+interface DodoPaymentDetails {
+  subscriptionId?: string;
+  customerId?: string;
+  paymentId?: string;
+}
+
+async function setUserTier(
+  userId: string | undefined,
+  tier: "free" | "pro" | "enterprise",
+  status: "active" | "expired" | "cancelled",
+  expiresAt: string | null,
+  dodoDetails?: DodoPaymentDetails
+): Promise<void> {
+  try {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Supabase admin credentials missing");
+      return;
+    }
+    if (!userId) {
+      console.warn("setUserTier called without userId; skipping update.");
+      return;
+    }
+
+    const supabase = createSbClient(supabaseUrl, supabaseServiceKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+
+    const updateData: Record<string, any> = {
+      user_id: userId,
+      tier,
+      status,
+      expires_at: expiresAt,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Add Dodo payment details if provided
+    if (dodoDetails?.subscriptionId) {
+      updateData.dodo_subscription_id = dodoDetails.subscriptionId;
+    }
+    if (dodoDetails?.customerId) {
+      updateData.dodo_customer_id = dodoDetails.customerId;
+    }
+    if (dodoDetails?.paymentId) {
+      updateData.dodo_payment_id = dodoDetails.paymentId;
+    }
+
+    const { error } = await supabase
+      .from("user_subscriptions")
+      .upsert(updateData, { onConflict: "user_id" });
+
+    if (error) {
+      console.error("Supabase upsert subscription failed:", error);
+    } else {
+      console.log(
+        `Subscription updated for user ${userId}: ${tier}/${status}`,
+        dodoDetails || ""
+      );
+    }
+  } catch (e) {
+    console.error("setUserTier error:", e);
+  }
+}
+
+/**
+ * Dodo Webhook
+ * Uses raw body for signature verification. Raw parser is mounted earlier via:
+ * app.use("/api/billing/webhook", express.raw({ type: "application/json" }));
+ */
+app.post("/api/billing/webhook", async (req: Request, res: Response) => {
+  try {
+    const secret = process.env.DODO_WEBHOOK_SECRET || "";
+    if (!secret) {
+      console.error("DODO_WEBHOOK_SECRET not set");
+      return res.status(500).json({ error: "Webhook secret not configured" });
+    }
+
+    const webhook = new Webhook(secret);
+    const headers = {
+      "webhook-id": req.headers["webhook-id"] as string,
+      "webhook-signature": req.headers["webhook-signature"] as string,
+      "webhook-timestamp": req.headers["webhook-timestamp"] as string,
+    };
+
+    const payload =
+      req.body instanceof Buffer
+        ? req.body.toString("utf8")
+        : typeof req.body === "string"
+        ? req.body
+        : JSON.stringify(req.body || {});
+
+    // Verify signature
+    await webhook.verify(payload, headers);
+
+    // Acknowledge quickly to avoid retries
+    res.status(200).json({ received: true });
+
+    // Process asynchronously
+    process.nextTick(async () => {
+      try {
+        const event = JSON.parse(payload);
+        console.log(`📨 Dodo webhook received: ${event?.type}`);
+
+        // Extract common Dodo data
+        const data = event?.data || {};
+        const subscription = data?.subscription || data;
+        const metadata = data?.metadata || subscription?.metadata || {};
+
+        switch (event?.type) {
+          case "subscription.active":
+          case "subscription.renewed": {
+            const userId = metadata?.user_id;
+            const dodoDetails: DodoPaymentDetails = {
+              subscriptionId: subscription?.subscription_id || subscription?.id,
+              customerId:
+                subscription?.customer?.customer_id || data?.customer_id,
+              paymentId: data?.payment_id,
+            };
+
+            console.log(`✅ Activating Pro for user ${userId}`, dodoDetails);
+            await setUserTier(userId, "pro", "active", null, dodoDetails);
+            break;
+          }
+          case "subscription.cancelled":
+          case "subscription.expired": {
+            const userId = metadata?.user_id;
+            const dodoDetails: DodoPaymentDetails = {
+              subscriptionId: subscription?.subscription_id || subscription?.id,
+            };
+
+            console.log(`❌ Cancelling Pro for user ${userId}`);
+            await setUserTier(userId, "free", "cancelled", null, dodoDetails);
+            break;
+          }
+          case "payment.succeeded": {
+            const userId = metadata?.user_id;
+            console.log(`💰 Payment succeeded for user ${userId}:`, {
+              paymentId: data?.payment_id,
+              amount: data?.amount,
+            });
+            break;
+          }
+          case "payment.failed": {
+            const userId = metadata?.user_id;
+            console.log(`⚠️ Payment failed for user ${userId}:`, {
+              paymentId: data?.payment_id,
+              reason: data?.failure_reason,
+            });
+            break;
+          }
+          default:
+            console.log(`ℹ️ Unhandled webhook event: ${event?.type}`);
+            break;
+        }
+      } catch (e) {
+        console.error("Webhook handler error:", e);
+      }
+    });
+  } catch (e) {
+    console.error("Webhook verification failed:", e);
+    return res.status(400).json({ error: "Invalid signature" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
@@ -680,7 +968,8 @@ app.listen(PORT, () => {
   console.log(
     `👤 Status endpoint: GET http://localhost:${PORT}/api/user/status/:userId`
   );
-  console.log(
-    `💳 Payment endpoint: POST http://localhost:${PORT}/api/payment/create-order`
-  );
+  // COMMENTED OUT: Payment endpoint disabled while implementing new payment method
+  // console.log(
+  //   `💳 Payment endpoint: POST http://localhost:${PORT}/api/payment/create-order`
+  // );
 });
