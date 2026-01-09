@@ -529,6 +529,16 @@ const Dashboard = () => {
                     : `${usageStatus.tier} Plan`}
                 </span>
 
+                {/* Upgrade CTA for Free Users */}
+                {usageStatus.tier === "free" && (
+                  <span
+                    onClick={() => navigate("/pricing")}
+                    className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-white/20 text-white/80 border border-white/30 hover:bg-white/30 hover:text-white cursor-pointer transition-colors"
+                  >
+                    Go Pro
+                  </span>
+                )}
+
                 {/* Usage Counter (only for free tier) */}
                 {!usageStatus.isUnlimited && (
                   <div className="flex items-center gap-2">

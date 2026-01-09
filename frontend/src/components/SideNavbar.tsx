@@ -9,6 +9,9 @@ import {
   IconHome,
   IconSettings,
   IconUserBolt,
+  IconInfoCircle,
+  IconMail,
+  IconCreditCard,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 
@@ -91,13 +94,28 @@ export function SideNavbar() {
       icon: <IconSettings className="h-5 w-5 shrink-0 text-white" />,
     },
     {
+      label: "Pricing",
+      onClick: () => handleNavigation("/pricing"),
+      icon: <IconCreditCard className="h-5 w-5 shrink-0 text-white" />,
+    },
+    {
+      label: "About Us",
+      onClick: () => handleNavigation("/about"),
+      icon: <IconInfoCircle className="h-5 w-5 shrink-0 text-white" />,
+    },
+    {
+      label: "Contact Us",
+      onClick: () => handleNavigation("/contactus"),
+      icon: <IconMail className="h-5 w-5 shrink-0 text-white" />,
+    },
+    {
       label: "Logout",
       onClick: handleLogout,
       icon: <IconArrowLeft className="h-5 w-5 shrink-0 text-white" />,
     },
   ];
   return (
-    <div className="md:h-screen">
+    <div className="h-screen">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">

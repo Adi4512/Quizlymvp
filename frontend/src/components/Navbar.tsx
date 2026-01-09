@@ -13,14 +13,14 @@ const Navbar = () => {
       <NavLink to="/" end className={linkClass}>
         Home
       </NavLink>
+      <NavLink to="/dashboard" className={linkClass}>
+        Dashboard
+      </NavLink>
       <NavLink to="/pricing" className={linkClass}>
         Pricing
       </NavLink>
       <NavLink to="/contactus" className={linkClass}>
         Contact
-      </NavLink>
-      <NavLink to="/about" className={linkClass}>
-        About
       </NavLink>
     </div>
   );

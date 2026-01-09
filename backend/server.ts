@@ -795,6 +795,252 @@ app.post(
 );
 
 /**
+ * Cancel Dodo subscription
+ * Body: { userId: string }
+ */
+app.post(
+  "/api/billing/cancel",
+  async (req: Request<{}, {}, { userId: string }>, res: Response) => {
+    try {
+      const { userId } = req.body || {};
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      // Get user's subscription to find dodo_subscription_id
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!supabaseUrl || !supabaseServiceKey) {
+        return res.status(500).json({ error: "Server configuration error" });
+      }
+
+      const supabase = createSbClient(supabaseUrl, supabaseServiceKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+
+      // Get current subscription
+      const { data: subscription, error: fetchError } = await supabase
+        .from("user_subscriptions")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (fetchError || !subscription) {
+        return res.status(404).json({ error: "Subscription not found" });
+      }
+
+      if (subscription.tier === "free") {
+        return res
+          .status(400)
+          .json({ error: "No active subscription to cancel" });
+      }
+
+      const dodoSubscriptionId = subscription.dodo_subscription_id;
+
+      // Cancel subscription in Dodo if we have the subscription ID
+      if (dodoSubscriptionId) {
+        try {
+          await dodo.subscriptions.update(dodoSubscriptionId, {
+            status: "cancelled",
+          } as any);
+          console.log(`✅ Dodo subscription cancelled: ${dodoSubscriptionId}`);
+        } catch (dodoErr: any) {
+          console.error(
+            "Dodo cancellation error:",
+            dodoErr?.response?.data || dodoErr
+          );
+          // Continue to update our database even if Dodo API fails
+        }
+      }
+
+      // Update subscription in our database
+      const { error: updateError } = await supabase
+        .from("user_subscriptions")
+        .update({
+          tier: "free",
+          status: "cancelled",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId);
+
+      if (updateError) {
+        console.error("Failed to update subscription:", updateError);
+        return res.status(500).json({ error: "Failed to cancel subscription" });
+      }
+
+      console.log(`✅ Subscription cancelled for user ${userId}`);
+
+      return res.json({
+        success: true,
+        message: "Subscription cancelled successfully",
+      });
+    } catch (err: any) {
+      console.error("Cancel subscription error:", err);
+      return res.status(500).json({
+        error: "Failed to cancel subscription",
+        details: err?.message || "unknown",
+      });
+    }
+  }
+);
+
+/**
+ * Delete user account and all associated data
+ * Body: { userId: string }
+ */
+app.delete(
+  "/api/user/delete",
+  async (req: Request<{}, {}, { userId: string }>, res: Response) => {
+    try {
+      const { userId } = req.body || {};
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!supabaseUrl || !supabaseServiceKey) {
+        return res.status(500).json({ error: "Server configuration error" });
+      }
+
+      const supabase = createSbClient(supabaseUrl, supabaseServiceKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+
+      console.log(`🗑️ Deleting account for user: ${userId}`);
+
+      // Get subscription to cancel in Dodo if active
+      const { data: subscription } = await supabase
+        .from("user_subscriptions")
+        .select("dodo_subscription_id, tier")
+        .eq("user_id", userId)
+        .single();
+
+      // Cancel Dodo subscription if exists
+      if (subscription?.dodo_subscription_id && subscription?.tier === "pro") {
+        try {
+          await dodo.subscriptions.update(subscription.dodo_subscription_id, {
+            status: "cancelled",
+          } as any);
+          console.log(
+            `✅ Dodo subscription cancelled: ${subscription.dodo_subscription_id}`
+          );
+        } catch (dodoErr: any) {
+          console.error(
+            "Dodo cancellation error (continuing):",
+            dodoErr?.message
+          );
+        }
+      }
+
+      // Delete all user data from tables (order matters due to foreign keys)
+      const tablesToDelete = [
+        "payments",
+        "quiz_results",
+        "daily_usage",
+        "user_subscriptions",
+        "user_stats",
+      ];
+
+      for (const table of tablesToDelete) {
+        const { error } = await supabase
+          .from(table)
+          .delete()
+          .eq("user_id", userId);
+
+        if (error) {
+          console.error(`Error deleting from ${table}:`, error);
+        } else {
+          console.log(`✅ Deleted user data from ${table}`);
+        }
+      }
+
+      // Delete the user from auth.users (this is the actual account deletion)
+      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+
+      if (authError) {
+        console.error("Error deleting auth user:", authError);
+        return res.status(500).json({
+          error: "Failed to delete account",
+          details: authError.message,
+        });
+      }
+
+      console.log(`✅ Account deleted successfully for user: ${userId}`);
+
+      return res.json({
+        success: true,
+        message: "Account deleted successfully",
+      });
+    } catch (err: any) {
+      console.error("Delete account error:", err);
+      return res.status(500).json({
+        error: "Failed to delete account",
+        details: err?.message || "unknown",
+      });
+    }
+  }
+);
+
+/**
+ * Get subscription details for settings page
+ * Returns subscription info including billing details
+ */
+app.get(
+  "/api/billing/subscription/:userId",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!supabaseUrl || !supabaseServiceKey) {
+        return res.status(500).json({ error: "Server configuration error" });
+      }
+
+      const supabase = createSbClient(supabaseUrl, supabaseServiceKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+
+      // Get subscription
+      const { data: subscription, error } = await supabase
+        .from("user_subscriptions")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Error fetching subscription:", error);
+        return res.status(500).json({ error: "Failed to fetch subscription" });
+      }
+
+      // Get recent payments
+      const { data: payments } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      return res.json({
+        success: true,
+        subscription: subscription || {
+          tier: "free",
+          status: "active",
+        },
+        payments: payments || [],
+      });
+    } catch (err: any) {
+      console.error("Get subscription error:", err);
+      return res.status(500).json({ error: "Failed to fetch subscription" });
+    }
+  }
+);
+
+/**
  * Helper: Update user subscription tier in Supabase with Dodo payment details
  */
 interface DodoPaymentDetails {
