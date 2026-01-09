@@ -5,7 +5,7 @@
  * - Free: Trial & lead funnel (no payment)
  * - Pro: Self-serve paid plan (Payment method being upgraded)
  * - Enterprise: Contact sales (no payment, manual onboarding)
- * 
+ *
  * NOTE: Razorpay has been commented out. New payment method to be implemented.
  */
 
@@ -17,8 +17,8 @@ export type PlanId = "free" | "pro" | "enterprise";
 
 // Pricing configuration - adjust PRO_PRICE_INR as needed (₹199-₹399 range)
 export const PRICING_CONFIG = {
-  PRO_PRICE_INR: 299, // Configurable: change to adjust Pro price
-  CURRENCY: "INR",
+  PRO_PRICE_INR: 3.5, // Configurable: change to adjust Pro price
+  CURRENCY: "DOLLAR",
   SALES_EMAIL: "quizethicai@protonmail.com", // Enterprise contact
 } as const;
 
@@ -81,7 +81,7 @@ export const PLANS: Record<PlanId, PricingPlan> = {
     id: "pro",
     name: "PRO",
     price: PRICING_CONFIG.PRO_PRICE_INR,
-    priceDisplay: `₹${PRICING_CONFIG.PRO_PRICE_INR}`,
+    priceDisplay: `$${PRICING_CONFIG.PRO_PRICE_INR}`,
     priceInPaise: PRICING_CONFIG.PRO_PRICE_INR * 100, // Convert to paise
     currency: PRICING_CONFIG.CURRENCY,
     description: "For serious learners & educators",

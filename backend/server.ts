@@ -900,51 +900,113 @@ app.post("/api/billing/webhook", async (req: Request, res: Response) => {
       try {
         const event = JSON.parse(payload);
         console.log(`📨 Dodo webhook received: ${event?.type}`);
+        console.log(`📦 Full webhook payload:`, JSON.stringify(event, null, 2));
 
-        // Extract common Dodo data
+        // Extract common Dodo data - try multiple paths
         const data = event?.data || {};
         const subscription = data?.subscription || data;
-        const metadata = data?.metadata || subscription?.metadata || {};
+
+        // Try multiple paths to find metadata with user_id
+        const metadata =
+          data?.metadata ||
+          subscription?.metadata ||
+          data?.customer?.metadata ||
+          {};
+
+        // Try multiple paths to find userId
+        const userId =
+          metadata?.user_id ||
+          data?.metadata?.user_id ||
+          subscription?.metadata?.user_id ||
+          data?.customer?.metadata?.user_id;
+
+        console.log(`👤 Extracted userId: ${userId}`);
+
+        // Helper to get Supabase client for payments recording
+        const getSupabase = () => {
+          const supabaseUrl = process.env.SUPABASE_URL;
+          const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          if (!supabaseUrl || !supabaseServiceKey) return null;
+          return createSbClient(supabaseUrl, supabaseServiceKey, {
+            auth: { autoRefreshToken: false, persistSession: false },
+          });
+        };
 
         switch (event?.type) {
           case "subscription.active":
           case "subscription.renewed": {
-            const userId = metadata?.user_id;
             const dodoDetails: DodoPaymentDetails = {
-              subscriptionId: subscription?.subscription_id || subscription?.id,
+              subscriptionId:
+                data?.subscription_id ||
+                subscription?.subscription_id ||
+                subscription?.id ||
+                data?.id,
               customerId:
-                subscription?.customer?.customer_id || data?.customer_id,
+                data?.customer?.customer_id ||
+                subscription?.customer?.customer_id ||
+                data?.customer_id,
               paymentId: data?.payment_id,
             };
 
             console.log(`✅ Activating Pro for user ${userId}`, dodoDetails);
-            await setUserTier(userId, "pro", "active", null, dodoDetails);
+
+            if (userId) {
+              await setUserTier(userId, "pro", "active", null, dodoDetails);
+            } else {
+              console.error("❌ No userId found in webhook metadata!");
+            }
             break;
           }
           case "subscription.cancelled":
           case "subscription.expired": {
-            const userId = metadata?.user_id;
             const dodoDetails: DodoPaymentDetails = {
-              subscriptionId: subscription?.subscription_id || subscription?.id,
+              subscriptionId:
+                data?.subscription_id ||
+                subscription?.subscription_id ||
+                subscription?.id,
             };
 
             console.log(`❌ Cancelling Pro for user ${userId}`);
-            await setUserTier(userId, "free", "cancelled", null, dodoDetails);
+            if (userId) {
+              await setUserTier(userId, "free", "cancelled", null, dodoDetails);
+            }
             break;
           }
           case "payment.succeeded": {
-            const userId = metadata?.user_id;
             console.log(`💰 Payment succeeded for user ${userId}:`, {
               paymentId: data?.payment_id,
-              amount: data?.amount,
+              amount: data?.total_amount || data?.amount,
+              currency: data?.currency,
             });
+
+            // Record payment in payments table
+            if (userId) {
+              const supabase = getSupabase();
+              if (supabase) {
+                const { error } = await supabase.from("payments").insert({
+                  user_id: userId,
+                  dodo_payment_id: data?.payment_id,
+                  dodo_subscription_id:
+                    data?.subscription_id || subscription?.subscription_id,
+                  dodo_customer_id: data?.customer?.customer_id,
+                  amount: data?.total_amount || data?.amount || 0,
+                  currency: data?.currency || "INR",
+                  status: "succeeded",
+                  plan_id: "pro",
+                });
+                if (error) {
+                  console.error("Failed to record payment:", error);
+                } else {
+                  console.log("✅ Payment recorded in database");
+                }
+              }
+            }
             break;
           }
           case "payment.failed": {
-            const userId = metadata?.user_id;
             console.log(`⚠️ Payment failed for user ${userId}:`, {
               paymentId: data?.payment_id,
-              reason: data?.failure_reason,
+              reason: data?.failure_reason || data?.error_message,
             });
             break;
           }

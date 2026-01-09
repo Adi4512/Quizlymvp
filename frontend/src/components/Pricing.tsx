@@ -29,7 +29,7 @@ import { Modal, useModal } from "./ui/modal";
 
 // Centralized config - sync with backend/shared config
 const PRICING_CONFIG = {
-  PRO_PRICE_INR: 299, // ₹199-₹399 range
+  PRO_PRICE_INR: 3.5, // ₹199-₹399 range
   SALES_EMAIL: "quizethicai@protonmail.com",
 };
 
@@ -60,7 +60,7 @@ const plans: Plan[] = [
   {
     id: "free",
     name: "FREE",
-    price: "₹0",
+    price: "$0",
     priceValue: 0,
     period: "forever",
     description: "Perfect for getting started",
@@ -81,7 +81,7 @@ const plans: Plan[] = [
   {
     id: "pro",
     name: "PRO",
-    price: `₹${PRICING_CONFIG.PRO_PRICE_INR}`,
+    price: `$${PRICING_CONFIG.PRO_PRICE_INR}`,
     priceValue: PRICING_CONFIG.PRO_PRICE_INR,
     period: "/month",
     description: "For serious learners & educators",
