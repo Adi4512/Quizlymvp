@@ -27,14 +27,6 @@ import {
   IconMail,
 } from "@tabler/icons-react";
 
-// COMMENTED OUT: Razorpay - implementing different payment method
-// Declare Razorpay on window object
-// declare global {
-//   interface Window {
-//     Razorpay: any;
-//   }
-// }
-
 // ═══════════════════════════════════════════════════════════════════════════
 // PRICING CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
@@ -303,7 +295,15 @@ const Pricing = () => {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#C084FC] via-[#A855F7] to-[#7E22CE] relative overflow-hidden">
+    <div className="min-h-screen w-full relative overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/static/pricingbg.webp')" }}
+      />
+      {/* Subtle overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-transparent to-purple-900/20" />
+
       {/* Desktop Header */}
       <header className="hidden md:flex items-center px-8 lg:px-16 pt-6 pb-4 relative z-10">
         <div className="flex-1">
