@@ -75,6 +75,7 @@ const Dashboard = () => {
   );
   const [topicsKey, setTopicsKey] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Usage tracking state
@@ -198,6 +199,32 @@ const Dashboard = () => {
         clearInterval(progressIntervalRef.current);
       }
     };
+  }, []);
+
+  // Check video support on mount (especially for iOS devices)
+  useEffect(() => {
+    // Check if video element is supported and can play
+    const checkVideoSupport = () => {
+      const video = document.createElement("video");
+      const canPlayWebm = video.canPlayType("video/webm");
+      const canPlayMp4 = video.canPlayType("video/mp4");
+
+      // If neither format is supported, use backup images
+      if (!canPlayWebm && !canPlayMp4) {
+        setVideoFailed(true);
+        return;
+      }
+
+      // For iOS devices, check if autoplay is likely to work
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        // iOS often blocks autoplay, so we'll use backup images
+        // The video will try to play, but if it fails, onError will handle it
+        setVideoFailed(false);
+      }
+    };
+
+    checkVideoSupport();
   }, []);
 
   // Rotate entire topic list every 10 seconds
@@ -354,23 +381,68 @@ const Dashboard = () => {
 
   return (
     <div className="h-screen w-screen overflow-x-hidden">
+      <style>{`
+        @keyframes shimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+        .shimmer-animation {
+          animation: shimmer 3s ease-in-out infinite;
+        }
+      `}</style>
       <div className="h-full flex flex-col md:flex-row overflow-hidden">
         {/* Video Background */}
         <div className="fixed inset-0 w-full h-full" style={{ zIndex: -1 }}>
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              console.error("Video failed to load:", e);
-            }}
-          >
-            <source src="/static/dashboardvid.webm" type="video/webm" />
-            <source src="/static/dashboardvid.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          {!videoFailed ? (
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error("Video failed to load:", e);
+                setVideoFailed(true);
+              }}
+              onCanPlay={(e) => {
+                // Try to play the video, if it fails, use backup
+                const videoElement = e.currentTarget;
+                videoElement.play().catch((error) => {
+                  console.log(
+                    "Video autoplay failed, using backup image:",
+                    error
+                  );
+                  setVideoFailed(true);
+                });
+              }}
+            >
+              <source src="/static/dashboardvid.webm" type="video/webm" />
+              <source src="/static/dashboardvid.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <>
+              {/* Mobile backup image */}
+              <div
+                className="md:hidden w-full h-full bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage:
+                    "url('/static/phonebackupdashboardimg.webp')",
+                }}
+              />
+              {/* Desktop backup image */}
+              <div
+                className="hidden md:block w-full h-full bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: "url('/static/webbackupdashboardimg.webp')",
+                }}
+              />
+            </>
+          )}
         </div>
 
         {/* Overlay for better text readability */}
@@ -547,7 +619,20 @@ const Dashboard = () => {
                 {usageStatus.tier === "free" && (
                   <span
                     onClick={() => navigate("/pricing")}
-                    className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-white/20 text-white/80 border border-white/30 hover:bg-white/30 hover:text-white cursor-pointer transition-colors"
+                    className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-300 ${
+                      usageStatus.remaining === 0
+                        ? "text-white border-0 shadow-lg shadow-pink-500/50 hover:shadow-pink-500/70 hover:scale-105 shimmer-animation"
+                        : "bg-white/20 text-white/80 border border-white/30 hover:bg-white/30 hover:text-white"
+                    }`}
+                    style={
+                      usageStatus.remaining === 0
+                        ? {
+                            background:
+                              "linear-gradient(90deg, #ec4899 0%, #a855f7 50%, #ec4899 100%)",
+                            backgroundSize: "200% 100%",
+                          }
+                        : {}
+                    }
                   >
                     Go Pro
                   </span>
@@ -578,15 +663,6 @@ const Dashboard = () => {
                           {usageStatus.remaining} left
                         </span>
                       )}
-
-                    {usageStatus.remaining === 0 && (
-                      <button
-                        onClick={() => navigate("/pricing")}
-                        className="text-xs px-2 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full hover:opacity-90 transition-opacity"
-                      >
-                        Upgrade
-                      </button>
-                    )}
                   </div>
                 )}
 

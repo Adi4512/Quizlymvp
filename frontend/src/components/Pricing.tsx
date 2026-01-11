@@ -590,7 +590,8 @@ const Pricing = () => {
                 </h3>
                 <p className="text-white/80 text-sm leading-relaxed">
                   We accept all major credit/debit cards, UPI, and net banking.
-                  Payment system coming soon!
+                  Both national and international payments are accepted.
+                  Everything is accepted!
                 </p>
               </div>
               <div className="bg-white/15 backdrop-blur-lg rounded-xl p-6 shadow-lg border border-white/20">
