@@ -108,8 +108,8 @@ export const AppLayout = ({ children, user }: AppLayoutProps) => {
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <img
-                    src="/static/logowhite.webp"
-                    className="h-6 w-6"
+                    src="/static/chatlogoquizethicwithoutbg.webp"
+                    className="h-12 w-16"
                     alt="Logo"
                   />
                   <span className="text-white font-semibold">Quizethic AI</span>

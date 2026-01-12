@@ -98,9 +98,9 @@ const Hero = () => {
         <div className="flex items-center justify-between px-5 pt-6 mt-4 pb-4">
           <div className="flex items-center gap-2">
             <img
-              src="/static/logowithoutbg.webp"
+              src="/static/chatlogoquizethicwithoutbg.webp"
               alt="Quizethic AI Logo"
-              className="w-8 h-8 rounded-xl"
+              className="w-16 h-12 rounded-xl"
             />
             <span className="font-bold text-base text-white drop-shadow">
               Quizethic AI
@@ -348,9 +348,9 @@ const Hero = () => {
               {/* Logo */}
               <div className="flex items-center gap-2 order-1 sm:order-1">
                 <img
-                  src="/static/logowithoutbg.webp"
+                  src="/static/chatlogoquizethicwithoutbg.webp"
                   alt="Quizethic AI Logo"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full"
+                  className="w-24 h-16 sm:w-24 sm:h-20 rounded-full"
                 />
               </div>
 

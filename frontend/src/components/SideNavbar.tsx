@@ -202,13 +202,13 @@ export const Logo = () => {
   return (
     <div className="flex items-center gap-2 h-6">
       <img
-        src="/static/logowhite.webp"
-        className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
+        src="/static/chatlogoquizethicwithoutbg.webp"
+        className="h-8 w-24 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
       />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="font-medium whitespace-pre text-white"
+        className="font-medium whitespace-pre text-white mt-[-5px]"
       >
         Quizethic AI
       </motion.span>
@@ -219,8 +219,8 @@ export const LogoIcon = () => {
   return (
     <div className="h-6 flex items-center">
       <img
-        src="/static/logowhite.webp"
-        className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
+        src="/static/chatlogoquizethicwithoutbg.webp"
+        className="h-8 w-24 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
       />
     </div>
   );

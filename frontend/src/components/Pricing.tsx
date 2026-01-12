@@ -295,14 +295,18 @@ const Pricing = () => {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/static/pricingbg.webp')" }}
-      />
-      {/* Subtle overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-transparent to-purple-900/20" />
+    <div
+      className="min-h-screen w-full relative overflow-hidden"
+      style={{
+        backgroundImage: "url('/static/pricingbg.webp')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Subtle overlay for better text readability - lighter on mobile */}
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/5 via-transparent to-purple-900/10 md:from-purple-900/10 md:via-transparent md:to-purple-900/20" />
 
       {/* Desktop Header */}
       <header className="hidden md:flex items-center px-8 lg:px-16 pt-6 pb-4 relative z-10">
@@ -312,9 +316,9 @@ const Pricing = () => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src="/static/logowithoutbg.webp"
+              src="/static/chatlogoquizethicwithoutbg.webp"
               alt="Quizethic AI Logo"
-              className="w-16 h-16 rounded-xl"
+              className="w-24 h-16 rounded-xl"
             />
             <span className=" mt-[-8px] font-bold text-lg text-white drop-shadow">
               Quizethic AI
@@ -340,9 +344,9 @@ const Pricing = () => {
           className="flex items-center gap-2"
         >
           <img
-            src="/static/logowhite.webp"
+            src="/static/chatlogoquizethicwithoutbg.webp"
             alt="Quizethic AI Logo"
-            className="w-8 h-8 rounded-xl"
+            className="w-16 h-12 rounded-xl"
           />
           <span className="font-bold text-base text-white drop-shadow">
             Quizethic AI
@@ -376,8 +380,8 @@ const Pricing = () => {
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <img
-                    src="/static/logowhite.webp"
-                    className="h-6 w-6"
+                    src="/static/chatlogoquizethicwithoutbg.webp"
+                    className="h-12 w-16"
                     alt="Logo"
                   />
                   <span className="text-white font-semibold">Quizethic AI</span>

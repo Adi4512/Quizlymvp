@@ -205,9 +205,9 @@ const ContactUs = () => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src="/static/logowithoutbg.webp"
+              src="/static/chatlogoquizethicwithoutbg.webp"
               alt="Quizethic AI Logo"
-              className="w-16 h-16 rounded-xl"
+              className="w-24 h-16 rounded-xl"
             />
             <span className=" mt-[-8px] font-bold text-lg text-white drop-shadow">
               Quizethic AI
@@ -233,9 +233,9 @@ const ContactUs = () => {
           className="flex items-center gap-2"
         >
           <img
-            src="/static/logowithoutbg.webp"
+            src="/static/chatlogoquizethicwithoutbg.webp"
             alt="Quizethic AI Logo"
-            className="w-8 h-8 rounded-xl"
+            className="w-16 h-12 rounded-xl"
           />
           <span className="font-bold text-base text-white drop-shadow">
             Quizethic AI
@@ -269,8 +269,8 @@ const ContactUs = () => {
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <img
-                    src="/static/logowhite.webp"
-                    className="h-6 w-6"
+                    src="/static/chatlogoquizethicwithoutbg.webp"
+                    className="h-12 w-16"
                     alt="Logo"
                   />
                   <span className="text-white font-semibold">Quizethic AI</span>
