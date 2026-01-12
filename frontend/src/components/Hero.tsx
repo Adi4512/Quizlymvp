@@ -54,6 +54,31 @@ const Hero = () => {
     checkAuth();
   }, []);
 
+  // Listen for auth state changes and redirect to dashboard after login
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // If user just signed in or signed up and modals are open, redirect to dashboard
+      if (
+        (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") &&
+        session?.user
+      ) {
+        if (isSignUpOpen || isSignInOpen) {
+          // Close modals first
+          setIsSignUpOpen(false);
+          setIsSignInOpen(false);
+          // Small delay to ensure modals close smoothly
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 100);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [isSignUpOpen, isSignInOpen, navigate]);
+
   // Show loading screen while checking authentication
   if (isCheckingAuth) {
     return (
@@ -73,7 +98,7 @@ const Hero = () => {
         <div className="flex items-center justify-between px-5 pt-6 mt-4 pb-4">
           <div className="flex items-center gap-2">
             <img
-              src="/static/quizethic-favicon.svg"
+              src="/static/logowithoutbg.webp"
               alt="Quizethic AI Logo"
               className="w-8 h-8 rounded-xl"
             />
@@ -319,21 +344,18 @@ const Hero = () => {
             className="relative overflow-hidden bg-white/30 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 w-full h-full border-t border-l border-r border-white/40 flex flex-col"
           >
             {/* Header */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 md:mb-14 mt-[-5px] sm:mt-[-10px] md:mt-[-15px] gap-4 sm:gap-0">
+            <div className=" flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 md:mb-14 mt-[-5px] sm:mt-[-10px] md:mt-[-15px] gap-4 sm:gap-0">
               {/* Logo */}
               <div className="flex items-center gap-2 order-1 sm:order-1">
                 <img
-                  src="/static/quizethic-favicon.svg"
+                  src="/static/logowithoutbg.webp"
                   alt="Quizethic AI Logo"
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full"
                 />
-                <span className="font-bold text-base sm:text-lg text-white drop-shadow">
-                  Quizethic AI
-                </span>
               </div>
 
               {/* Center Navigation */}
-              <div className="order-2 sm:order-2 ">
+              <div className="order-2 sm:order-2 ml-12">
                 <Navbar />
               </div>
 

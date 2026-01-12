@@ -202,7 +202,7 @@ export const Logo = () => {
   return (
     <div className="flex items-center gap-2 h-6">
       <img
-        src="/static/quizethic-favicon.svg"
+        src="/static/logowhite.webp"
         className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
       />
       <motion.span
@@ -219,7 +219,7 @@ export const LogoIcon = () => {
   return (
     <div className="h-6 flex items-center">
       <img
-        src="/static/quizethic-favicon.svg"
+        src="/static/logowhite.webp"
         className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
       />
     </div>

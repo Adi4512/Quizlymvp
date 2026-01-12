@@ -491,7 +491,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <img
-                      src="/static/quizethic-favicon.svg"
+                      src="/static/logowhite.webp"
                       className="h-6 w-6"
                       alt="Logo"
                     />

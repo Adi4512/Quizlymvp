@@ -312,11 +312,11 @@ const Pricing = () => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src="/static/quizethic-favicon.svg"
+              src="/static/logowithoutbg.webp"
               alt="Quizethic AI Logo"
-              className="w-10 h-10 rounded-xl"
+              className="w-16 h-16 rounded-xl"
             />
-            <span className="font-bold text-lg text-white drop-shadow">
+            <span className=" mt-[-8px] font-bold text-lg text-white drop-shadow">
               Quizethic AI
             </span>
           </button>
@@ -340,7 +340,7 @@ const Pricing = () => {
           className="flex items-center gap-2"
         >
           <img
-            src="/static/quizethic-favicon.svg"
+            src="/static/logowhite.webp"
             alt="Quizethic AI Logo"
             className="w-8 h-8 rounded-xl"
           />
@@ -376,7 +376,7 @@ const Pricing = () => {
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <img
-                    src="/static/quizethic-favicon.svg"
+                    src="/static/logowhite.webp"
                     className="h-6 w-6"
                     alt="Logo"
                   />

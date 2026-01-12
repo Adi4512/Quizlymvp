@@ -111,7 +111,7 @@ const About = () => {
               className="cursor-pointer flex items-center gap-2"
             >
               <img
-                src="/static/quizethic-favicon.svg"
+                src="/static/logowhite.webp"
                 alt="Quizethic AI Logo"
                 className="w-10 h-10 rounded-xl"
               />
@@ -139,7 +139,7 @@ const About = () => {
             className="flex items-center gap-2"
           >
             <img
-              src="/static/quizethic-favicon.svg"
+              src="/static/logowhite.webp"
               alt="Quizethic AI Logo"
               className="w-8 h-8 rounded-xl"
             />
@@ -175,11 +175,13 @@ const About = () => {
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <img
-                      src="/static/quizethic-favicon.svg"
+                      src="/static/logowhite.webp"
                       className="h-6 w-6"
                       alt="Logo"
                     />
-                    <span className="text-white font-semibold">Quizethic AI</span>
+                    <span className="text-white font-semibold">
+                      Quizethic AI
+                    </span>
                   </div>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
