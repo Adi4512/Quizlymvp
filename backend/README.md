@@ -74,7 +74,7 @@ curl -X POST http://localhost:3000/api/generate \
 - `OPENROUTER_API_KEY` - Your OpenRouter API key (required)
 - `PORT` - Server port (default: 3000)
 - `APP_URL` - Your app URL for OpenRouter headers
-- `FRONTEND_URL` - Frontend URL for CORS (if needed)
+- `FRONTEND_URL` - Frontend URL for CORS and billing redirects (default: http://localhost:5173, production: https://quizethicai.com)
 
 ## Getting OpenRouter API Key
 
