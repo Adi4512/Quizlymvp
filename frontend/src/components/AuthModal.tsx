@@ -90,7 +90,32 @@ const AuthModal = () => {
       );
 
       if (error) {
-        setSignInError(error.message);
+        // Check if this error might indicate the user has an OAuth account
+        let errorMessage = error.message;
+        
+        // Supabase error codes and messages for different scenarios
+        const errorLower = error.message.toLowerCase();
+        
+        // If it's an invalid credentials error, it could mean:
+        // 1. Wrong password
+        // 2. Email doesn't exist
+        // 3. Email exists but was registered with OAuth (no password set)
+        if (errorLower.includes("invalid login credentials") || 
+            errorLower.includes("invalid_credentials") ||
+            (errorLower.includes("invalid") && errorLower.includes("credential"))) {
+          // Check if this might be an OAuth account by checking error status code
+          // Supabase returns status 400 for invalid credentials
+          // We'll provide a helpful message that suggests trying Google sign-in
+          errorMessage = "Invalid email or password. If you previously signed up with Google, this email is already registered. Please use the 'Continue with Google' button above to sign in instead.";
+        } else if (errorLower.includes("email not confirmed") || 
+                   errorLower.includes("email_not_confirmed")) {
+          errorMessage = "Please confirm your email address first, or sign in with Google if you registered using Google.";
+        } else if (errorLower.includes("user not found") || 
+                   errorLower.includes("no user found")) {
+          errorMessage = "No account found with this email. Please sign up first or use Google sign-in if you have a Google account.";
+        }
+        
+        setSignInError(errorMessage);
         setSignInLoading(false);
       } else {
         // Successfully signed in - close modal and clear form

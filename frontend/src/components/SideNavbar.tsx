@@ -201,10 +201,7 @@ export function SideNavbar() {
 export const Logo = () => {
   return (
     <div className="flex items-center gap-2 h-6">
-      <img
-        src="/static/chatlogoquizethicwithoutbg.webp"
-        className="h-8 w-24 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
-      />
+    
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -220,7 +217,7 @@ export const LogoIcon = () => {
     <div className="h-6 flex items-center">
       <img
         src="/static/chatlogoquizethicwithoutbg.webp"
-        className="h-8 w-24 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
+        className="h-8 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm"
       />
     </div>
   );
