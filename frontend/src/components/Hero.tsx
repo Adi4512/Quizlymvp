@@ -59,20 +59,15 @@ const Hero = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // If user just signed in or signed up and modals are open, redirect to dashboard
-      if (
-        (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") &&
-        session?.user
-      ) {
+      // If user just signed in, redirect to dashboard
+      if (event === "SIGNED_IN" && session?.user) {
+        // Close modals if they're open
         if (isSignUpOpen || isSignInOpen) {
-          // Close modals first
           setIsSignUpOpen(false);
           setIsSignInOpen(false);
-          // Small delay to ensure modals close smoothly
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 100);
         }
+        // Redirect to dashboard - use replace to avoid adding to history
+        navigate("/dashboard", { replace: true });
       }
     });
 

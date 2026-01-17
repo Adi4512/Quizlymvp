@@ -62,14 +62,26 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }: SignInProps) => {
 
       if (error) {
         setError(error.message);
+        setLoading(false);
       } else {
-        // Successfully signed in
+        // Successfully signed in - close modal
         onClose();
-        navigate("/dashboard");
+        // Wait for session to be established, then navigate
+        // The auth state change listener in Hero will also handle redirect,
+        // but we'll navigate here as well to ensure it happens
+        const checkSessionAndNavigate = async () => {
+          // Wait a bit for session to be established
+          await new Promise(resolve => setTimeout(resolve, 300));
+          // Verify session exists before navigating
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            navigate("/dashboard", { replace: true });
+          }
+        };
+        checkSessionAndNavigate();
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
-    } finally {
       setLoading(false);
     }
   };

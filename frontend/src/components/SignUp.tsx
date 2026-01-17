@@ -100,7 +100,9 @@ const SignUp = ({ isOpen, onClose, onSwitchToSignIn }: SignUpProps) => {
             password: "",
             confirmPassword: "",
           });
-          navigate("/dashboard");
+          // The auth state change listener in Hero will handle the redirect
+          // But also navigate here as fallback
+          navigate("/dashboard", { replace: true });
         }, 3000);
       }
     } catch (err) {

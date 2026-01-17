@@ -91,14 +91,23 @@ const AuthModal = () => {
 
       if (error) {
         setSignInError(error.message);
+        setSignInLoading(false);
       } else {
-        // Successfully signed in - user state will be updated by the auth listener
+        // Successfully signed in - close modal and clear form
         setShowSignIn(false);
         setSignInData({ email: "", password: "" });
+        // Wait for session to be established, then navigate
+        const checkSessionAndNavigate = async () => {
+          await new Promise(resolve => setTimeout(resolve, 300));
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            navigate("/dashboard", { replace: true });
+          }
+        };
+        checkSessionAndNavigate();
       }
     } catch (err) {
       setSignInError("An unexpected error occurred. Please try again.");
-    } finally {
       setSignInLoading(false);
     }
   };
@@ -162,7 +171,7 @@ const AuthModal = () => {
       if (error) {
         setSignUpError(error.message);
       } else {
-        // Successfully signed up - user state will be updated by the auth listener
+        // Successfully signed up - close modal and clear form
         setShowSignUp(false);
         setSignUpData({
           username: "",
@@ -170,6 +179,15 @@ const AuthModal = () => {
           password: "",
           confirmPassword: "",
         });
+        // Wait for session to be established, then navigate
+        const checkSessionAndNavigate = async () => {
+          await new Promise(resolve => setTimeout(resolve, 300));
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            navigate("/dashboard", { replace: true });
+          }
+        };
+        checkSessionAndNavigate();
       }
     } catch (err) {
       setSignUpError("An unexpected error occurred. Please try again.");
